@@ -1,0 +1,21 @@
+{
+    "name": "ttvcloud/vcloud-sdk-php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "huangxin.maigo",
+            "email": "huangxin.maigo@bytedance.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle":"~6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vcloud\\": "src/",
+            "Test\\": "tests/"
+        }
+    }
+}
