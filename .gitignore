@@ -4,3 +4,4 @@ composer.lock
 phpunit*
 *.phar*
 *.bat*
+*.DS_Store*

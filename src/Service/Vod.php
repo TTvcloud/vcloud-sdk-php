@@ -22,5 +22,45 @@ class Vod extends V4Curl {
     }
 
     protected $apiList = [
+        'GetSpace' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetSpace',
+                    'Version' => '2018-12-01',
+                ],
+            ]
+        ],
+        'ApplyUpload' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ApplyUpload',
+                    'Version' => '2019-03-05',
+                ],
+            ]
+        ],
+        'CommitUpload' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'CommitUpload',
+                    'Version' => '2019-03-05',
+                ],
+            ]
+        ],
+        'GetPlayInfo' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetPlayInfo',
+                    'Version' => '2019-03-15',
+                ],
+            ]
+        ],
     ];
 }
