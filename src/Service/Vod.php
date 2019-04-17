@@ -44,7 +44,7 @@ class Vod extends V4Curl {
         ],
         'CommitUpload' => [
             'url' => '/',
-            'method' => 'get',
+            'method' => 'post',
             'config' => [
                 'query' => [
                     'Action' => 'CommitUpload',

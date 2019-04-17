@@ -3,7 +3,7 @@ require('../vendor/autoload.php');
 use Vcloud\Service\Vod;
 use Vcloud\Service\Tos;
 
-$space = "huangxin";
+$space = "your space";
 
 echo "\nstaging-1:获取Space列表\n";
 $response = Vod::getInstance()->request('GetSpace', ['query' => ['Type' => 'list', 'ProjectNames' => 'default']]);
@@ -49,6 +49,6 @@ $response = Tos::getInstance()->request('CommitUpload', [
 echo (string)$response->getBody();
 
 echo "\nstaing-6:确认上传\n";
-$response = Vod::getInstance()->request('CommitUpload', ['query' => ['Space' => $space], 'form_params' => ['Oid' => $oid, 'SessionKey' => $session]]);
+$response = Vod::getInstance()->request('CommitUpload', ['query' => ['Space' => $space], 'json' => ['Oid' => $oid, 'SessionKey' => $session]]);
 echo (string)$response->getBody();
 
