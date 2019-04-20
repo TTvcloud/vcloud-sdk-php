@@ -5,6 +5,7 @@
 namespace Vcloud\Base;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\CurlHandler;
 use Psr\Http\Message\RequestInterface;
@@ -30,16 +31,41 @@ abstract class V4Curl extends BaseCurl
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
                 $v4 = new SignatureV4();
-                $credentials = $options['v4_credentials'];
-                if (!isset($credentials['ak']) || !isset($credentials['sk'])) {
-                    $json = json_decode(file_get_contents(getenv('HOME') . '/.vcloud/config'), true);
-                    if (is_array($json) && isset($json['ak']) && isset($json['sk'])) {
-                        $credentials = array_merge($credentials, $json);
-                    }
-                }
+                $credentials = $this->prepareCredentials($options['v4_credentials']);
                 $request = $v4->signRequest($request, $credentials);
                 return $handler($request, $options);
             };
         };
+    }
+
+    private function prepareCredentials(array $credentials) 
+    {
+        if (!isset($credentials['ak']) || !isset($credentials['sk'])) {
+            $json = json_decode(file_get_contents(getenv('HOME') . '/.vcloud/config'), true);
+            if (is_array($json) && isset($json['ak']) && isset($json['sk'])) {
+                $credentials = array_merge($credentials, $json);
+            }else {
+                $credentials['ak'] = getenv("VCLOUD_ACCESSKEY");
+                $credentials['sk'] = getenv("VCLOUD_SECRETKEY");
+            }
+        }
+        return $credentials;
+    }
+
+    public function getRequestUrl($api, array $config = [])
+    {
+        $config_api = isset($this->apiList[$api]) ? $this->apiList[$api] : false;
+
+        $defaultConfig = $this->getConfig();
+        $config = $this->configMerge($defaultConfig['config'], $config_api['config'], $config);
+        $info = array_merge($defaultConfig, $config_api);
+
+        $method = $info['method'];
+        $request = new Request($method, $info['host'].$info['url'].'?'.http_build_query($config['query']));
+
+        $credentials = $this->prepareCredentials($config['v4_credentials']);
+        $v4 = new SignatureV4();
+
+        return $v4->signRequestToUrl($request, $credentials);
     }
 }

@@ -54,7 +54,7 @@ abstract class BaseCurl extends Singleton
         }
     }
 
-    private function configMerge($c1, $c2, $c3)
+    protected function configMerge($c1, $c2, $c3)
     {
         $result = $c1;
         foreach ($c2 as $k=>$v) {

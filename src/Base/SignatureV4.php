@@ -9,6 +9,37 @@ class SignatureV4
     use SignatureTrait;
     const ISO8601_BASIC = 'Ymd\THis\Z';
 
+    public function signRequestToUrl(RequestInterface $request, $credentials)
+    {
+        $ldt = gmdate(self::ISO8601_BASIC);
+        $sdt = substr($ldt, 0, 8);
+        $ak = $credentials['ak'];
+        $cs = $this->createScope($sdt, $credentials['region'], $credentials['service']);
+
+        $parsed = $this->parseRequest($request);
+        var_dump($parsed['headers']);
+        $parsed['query']['X-Amz-Date'] = $ldt;
+        $parsed['query']['X-Amz-Algorithm'] = "AWS4-HMAC-SHA256";
+        $parsed['query']['X-Amz-Credential'] = "{$ak}/${cs}";
+        $parsed['query']['X-Amz-SignedHeaders'] = "host";
+
+        $cs = $this->createScope($sdt, $credentials['region'], $credentials['service']);
+        $payload = $this->getPayload($request);
+        $context = $this->createContext($parsed, $payload);
+        $toSign = $this->createStringToSign($ldt, $cs, $context['creq']);
+        $signingKey = $this->getSigningKey(
+            $sdt,
+            $credentials['region'],
+            $credentials['service'],
+            $credentials['sk']
+        );
+        $signature = hash_hmac('sha256', $toSign, $signingKey);
+
+        $parsed['query']['X-Amz-Signature'] = $signature;
+
+        return $this->buildRequestString($parsed);
+    }
+
     public function signRequest(
         RequestInterface $request,
         $credentials
@@ -196,5 +227,13 @@ class SignatureV4
             $req['body'],
             $req['version']
         );
+    }
+
+    private function buildRequestString(array $req)
+    {
+        if ($req['query']) {
+            $req['uri'] = $req['uri']->withQuery(Psr7\build_query($req['query']));
+        }
+        return (string)$req['uri'];
     }
 }
