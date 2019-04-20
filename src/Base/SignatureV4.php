@@ -17,7 +17,6 @@ class SignatureV4
         $cs = $this->createScope($sdt, $credentials['region'], $credentials['service']);
 
         $parsed = $this->parseRequest($request);
-        var_dump($parsed['headers']);
         $parsed['query']['X-Amz-Date'] = $ldt;
         $parsed['query']['X-Amz-Algorithm'] = "AWS4-HMAC-SHA256";
         $parsed['query']['X-Amz-Credential'] = "{$ak}/${cs}";
