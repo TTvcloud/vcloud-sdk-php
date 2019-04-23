@@ -20,7 +20,11 @@ class SignatureV4
         $parsed['query']['X-Amz-Date'] = $ldt;
         $parsed['query']['X-Amz-Algorithm'] = "AWS4-HMAC-SHA256";
         $parsed['query']['X-Amz-Credential'] = "{$ak}/${cs}";
-        $parsed['query']['X-Amz-SignedHeaders'] = "host";
+        $parsed['query']['X-Amz-SignedHeaders'] = '';
+
+        $signedQueries = array_keys($parsed['query']);
+        sort($signedQueries);
+        $parsed['query']['X-Amz-SignedQueries'] = implode(';', $signedQueries);
 
         $cs = $this->createScope($sdt, $credentials['region'], $credentials['service']);
         $payload = $this->getPayload($request);
@@ -140,27 +144,30 @@ class SignatureV4
             . $this->createCanonicalizedPath($parsedRequest['path']) . "\n"
             . $this->getCanonicalizedQuery($parsedRequest['query']) . "\n";
 
+        $signedHeadersString = '';
+        $canonHeaders = [];
         // Case-insensitively aggregate all of the headers.
-        $aggregate = [];
-        foreach ($parsedRequest['headers'] as $key => $values) {
-            $key = strtolower($key);
-            if (!isset($blacklist[$key])) {
-                foreach ($values as $v) {
-                    $aggregate[$key][] = $v;
+        if (!isset($parsedRequest['query']['X-Amz-SignedQueries'])) {
+            $aggregate = [];
+            foreach ($parsedRequest['headers'] as $key => $values) {
+                $key = strtolower($key);
+                if (!isset($blacklist[$key])) {
+                    foreach ($values as $v) {
+                        $aggregate[$key][] = $v;
+                    }
                 }
             }
-        }
 
-        ksort($aggregate);
-        $canonHeaders = [];
-        foreach ($aggregate as $k => $v) {
-            if (count($v) > 0) {
-                sort($v);
+            ksort($aggregate);
+            foreach ($aggregate as $k => $v) {
+                if (count($v) > 0) {
+                    sort($v);
+                }
+                $canonHeaders[] = $k . ':' . preg_replace('/\s+/', ' ', implode(',', $v));
             }
-            $canonHeaders[] = $k . ':' . preg_replace('/\s+/', ' ', implode(',', $v));
-        }
 
-        $signedHeadersString = implode(';', array_keys($aggregate));
+            $signedHeadersString = implode(';', array_keys($aggregate));
+        }
         $canon .= implode("\n", $canonHeaders) . "\n\n"
             . $signedHeadersString . "\n"
             . $payload;
@@ -177,14 +184,28 @@ class SignatureV4
         }
 
         $qs = '';
-        ksort($query);
-        foreach ($query as $k => $v) {
-            if (!is_array($v)) {
-                $qs .= rawurlencode($k) . '=' . rawurlencode($v) . '&';
-            } else {
-                sort($v);
-                foreach ($v as $value) {
-                    $qs .= rawurlencode($k) . '=' . rawurlencode($value) . '&';
+        if (isset($query['X-Amz-SignedQueries'])) {
+            foreach (explode(';', $query['X-Amz-SignedQueries']) as $k) {
+                $v = $query[$k];
+                if (!is_array($v)) {
+                    $qs .= rawurlencode($k) . '=' . rawurlencode($v) . '&';
+                } else {
+                    sort($v);
+                    foreach ($v as $value) {
+                        $qs .= rawurlencode($k) . '=' . rawurlencode($value) . '&';
+                    }
+                }
+            }
+        }else {
+            ksort($query);
+            foreach ($query as $k => $v) {
+                if (!is_array($v)) {
+                    $qs .= rawurlencode($k) . '=' . rawurlencode($v) . '&';
+                } else {
+                    sort($v);
+                    foreach ($v as $value) {
+                        $qs .= rawurlencode($k) . '=' . rawurlencode($value) . '&';
+                    }
                 }
             }
         }
