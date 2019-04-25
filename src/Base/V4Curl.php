@@ -13,8 +13,14 @@ use Psr\Http\Message\ResponseInterface;
 
 abstract class V4Curl extends BaseCurl 
 {
-    protected function __construct()
+    protected $ak = "";
+    protected $sk = "";
+
+    public function __construct($ak = "", $sk = "")
     {
+        $this->ak = $ak;
+        $this->sk = $sk;
+
         $this->stack = HandlerStack::create();
         $this->stack->push($this->replaceUri());
         $this->stack->push($this->v4Sign());
@@ -41,12 +47,17 @@ abstract class V4Curl extends BaseCurl
     private function prepareCredentials(array $credentials) 
     {
         if (!isset($credentials['ak']) || !isset($credentials['sk'])) {
-            $json = json_decode(file_get_contents(getenv('HOME') . '/.vcloud/config'), true);
-            if (is_array($json) && isset($json['ak']) && isset($json['sk'])) {
-                $credentials = array_merge($credentials, $json);
-            }else {
+            if ($this->ak != "" && $this->sk != "") {
+                $credentials['ak'] = $this->ak;
+                $credentials['sk'] = $this->sk;
+            }elseif (getenv("VCLOUD_ACCESSKEY") != "" && getenv("VCLOUD_SECRETKEY") != "") {
                 $credentials['ak'] = getenv("VCLOUD_ACCESSKEY");
                 $credentials['sk'] = getenv("VCLOUD_SECRETKEY");
+            }else {
+                $json = json_decode(file_get_contents(getenv('HOME') . '/.vcloud/config'), true);
+                if (is_array($json) && isset($json['ak']) && isset($json['sk'])) {
+                    $credentials = array_merge($credentials, $json);
+                }
             }
         }
         return $credentials;

@@ -3,25 +3,30 @@
 ```shell
 composer require ttvcloud/vcloud-sdk-php
 ```
-####ak|sk配置
->获取到用户的aksk后配置在文件
-```shell
-~\.vcloud\config
-```
-####config文件结构
-```
-{
-    "ak":"your ak",
-    "sk":"your sk"
-}
-```
+####aksk配置
+
+1. 配置在业务代码中，直接使用
+
+2. 配置相关的环境变量`VCLOUD_ACCESSKEY`,`VCLOUD_SECRETKEY`
+
+3. 配置在默认的系统文件中`~/./vcloud/config`
+
+   config文件结构
+
+   ```json
+   {
+       "ak":"your ak",
+       "sk":"your sk"
+   }
+   ```
 
 ##功能列表
+
 >敬请期待
 
 ##Demo
 
-1. 直接调用，会去获取~/.vcloud/config下的aksk信息，并且使用服务默认的region信息(这里使用cn-north-1)。
+1. 直接调用，会去获取`~/.vcloud/config`下的aksk信息，并且使用服务默认的region信息(这里使用cn-north-1)。
 
 ```php
 <?php
@@ -60,3 +65,15 @@ use Vcloud\Service\Iam;
 $response = Iam::getInstance()->request('ListUsers', ['v4_credentials'=>['ak'=>$ak, 'sk'=>$sk], 'query'=>['Limit'=>10, 'Offset'=>0]], 'cn-north-1');
 echo (string)$response->getBody();
 ```
+
+5. 也支持独立初始化client的场景
+
+```php
+<?php
+require('../vendor/autoload.php');
+use Vcloud\Service\Iam;
+$client = new Iam($ak, $sk);
+$response = $client->request('ListUsers');
+echo (string)$response->getBody();
+```
+
