@@ -72,5 +72,25 @@ class Vod extends V4Curl {
                 ],
             ]
         ],
+        'StartTranscode' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'StartTranscode',
+                    'Version' => '2018-01-01',
+                ],
+            ]
+        ],
+        'MediaSetVideoPublishStatus' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'MediaSetVideoPublishStatus',
+                    'Version' => '2018-01-01',
+                ],
+            ]
+        ],
     ];
 }
