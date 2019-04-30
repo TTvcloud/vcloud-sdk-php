@@ -84,7 +84,7 @@ class Vod extends V4Curl {
         ],
         'MediaSetVideoPublishStatus' => [
             'url' => '/',
-            'method' => 'get',
+            'method' => 'post',
             'config' => [
                 'query' => [
                     'Action' => 'MediaSetVideoPublishStatus',
