@@ -82,12 +82,12 @@ class Vod extends V4Curl {
                 ],
             ]
         ],
-        'MediaSetVideoPublishStatus' => [
+        'SetVideoPublishStatus' => [
             'url' => '/',
             'method' => 'post',
             'config' => [
                 'query' => [
-                    'Action' => 'MediaSetVideoPublishStatus',
+                    'Action' => 'SetVideoPublishStatus',
                     'Version' => '2018-01-01',
                 ],
             ]

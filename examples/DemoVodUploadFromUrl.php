@@ -5,6 +5,6 @@ use Vcloud\Service\Vod;
 $space = "your space";
 $url = "";
 
-$response = Vod::getInstance()->request('UploadMediaByURL', ['query' => ['Space' => $space, 'Format' => 'mp4', 'SourceURLs' => $url]]);
+$response = Vod::getInstance()->request('UploadMediaByURL', ['query' => ['SpaceName' => $space, 'Format' => 'mp4', 'SourceUrls' => $url]]);
 echo (string)$response->getBody();
 echo "\n";
