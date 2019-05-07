@@ -62,12 +62,12 @@ class Vod extends V4Curl {
                 ],
             ]
         ],
-        'UploadMediaByURL' => [
+        'UploadMediaByUrl' => [
             'url' => '/',
             'method' => 'get',
             'config' => [
                 'query' => [
-                    'Action' => 'UploadMediaByURL',
+                    'Action' => 'UploadMediaByUrl',
                     'Version' => '2018-01-01',
                 ],
             ]
