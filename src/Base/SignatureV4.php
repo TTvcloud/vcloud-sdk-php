@@ -18,6 +18,7 @@ class SignatureV4
 
         $parsed = $this->parseRequest($request);
         $parsed['query']['X-Amz-Date'] = $ldt;
+        $parsed['query']['X-Amz-NotSignBody'] = true;
         $parsed['query']['X-Amz-Algorithm'] = "AWS4-HMAC-SHA256";
         $parsed['query']['X-Amz-Credential'] = "{$ak}/${cs}";
         $parsed['query']['X-Amz-SignedHeaders'] = '';
