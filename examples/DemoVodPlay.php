@@ -1,7 +1,6 @@
 <?php
 require('../vendor/autoload.php');
 use Vcloud\Service\Vod;
-use Vcloud\Service\Tos;
 
 $vid = "your vid";
 
@@ -10,5 +9,10 @@ $response = Vod::getInstance()->request('GetPlayInfo', ['query' => ['video_id' =
 echo (string)$response->getBody();
 
 echo "\n获取签名以后的openAPI连接\n";
+$response = Vod::getInstance()->getPlayAuthToken('GetPlayInfo', ['query' => ['video_id' => $vid]]);
+echo (string)$response;
+
+echo "\n获取签名以后的openAPI连接\n";
 $response = Vod::getInstance()->getRequestUrl('GetPlayInfo', ['query' => ['video_id' => $vid]]);
 echo (string)$response;
+

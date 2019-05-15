@@ -21,6 +21,14 @@ class Vod extends V4Curl {
         ];
     }
 
+    public function getPlayAuthToken($api, array $config = [])
+    {
+        $url = $this->getRequestUrl($api, $config);
+
+        $m = parse_url($url);
+        return $m["query"];
+    }
+
     protected $apiList = [
         'GetSpace' => [
             'url' => '/',

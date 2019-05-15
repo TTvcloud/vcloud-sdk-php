@@ -79,12 +79,4 @@ abstract class V4Curl extends BaseCurl
 
         return $v4->signRequestToUrl($request, $credentials);
     }
-
-    public function getPlayAuthToken($api, array $config = [])
-    {
-        $url = $this->getRequestUrl($api, $config);
-
-        $m = parse_url($url);
-        return $m["query"];
-    }
 }
