@@ -14,7 +14,7 @@ $response = Vod::getInstance()->request('GetSpace', ['query' => ['Type' => 'list
 echo (string)$response->getBody();
 
 echo "\nstaging-2:获取上传地址\n";
-$response = Vod::getInstance()->request('ApplyUpload', ['query' => ['Space' => $space]]);
+$response = Vod::getInstance()->request('ApplyUpload', ['query' => ['SpaceName' => $space]]);
 echo (string)$response->getBody();
 
 echo "\nstaging-3:初始化上传\n";
@@ -53,6 +53,6 @@ $response = Tos::getInstance()->request('CommitUpload', [
 echo (string)$response->getBody();
 
 echo "\nstaing-6:确认上传\n";
-$response = Vod::getInstance()->request('CommitUpload', ['query' => ['Space' => $space], 'json' => ['Oid' => $oid, 'SessionKey' => $session]]);
+$response = Vod::getInstance()->request('CommitUpload', ['query' => ['SpaceName' => $space], 'json' => ['Oid' => $oid, 'SessionKey' => $session]]);
 echo (string)$response->getBody();
 

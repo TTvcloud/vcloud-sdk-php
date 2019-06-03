@@ -33,12 +33,12 @@ class Vod extends V4Curl {
     {
         $token = [];
 
-        $url = $this->getRequestUrl("ApplyUpload", ["query" => ["Space" => $space]]);
+        $url = $this->getRequestUrl("ApplyUpload", ["query" => ["SpaceName" => $space]]);
         $m = parse_url($url);
 
         $token["ApplyUploadToken"] = $m["query"];
 
-        $url = $this->getRequestUrl("CommitUpload", ["query" => ["Space" => $space]]);
+        $url = $this->getRequestUrl("CommitUpload", ["query" => ["SpaceName" => $space]]);
         $m = parse_url($url);
 
         $token["CommitUpload"] = $m["query"];
