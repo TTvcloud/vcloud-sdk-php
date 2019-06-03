@@ -9,7 +9,7 @@ $response = Vod::getInstance()->request('GetPlayInfo', ['query' => ['video_id' =
 echo (string)$response->getBody();
 
 echo "\n获取签名以后的openAPI连接\n";
-$response = Vod::getInstance()->getPlayAuthToken('GetPlayInfo', ['query' => ['video_id' => $vid]]);
+$response = Vod::getInstance()->getPlayAuthToken(['query' => ['video_id' => $vid]]);
 echo (string)$response;
 
 echo "\n获取签名以后的openAPI连接\n";

@@ -5,6 +5,10 @@ use Vcloud\Service\Tos;
 
 $space = "your space";
 
+echo "\n获取上传的Token\n";
+$response = Vod::getInstance()->getUploadAuthToken($space);
+echo (string)$response;
+
 echo "\nstaging-1:获取Space列表\n";
 $response = Vod::getInstance()->request('GetSpace', ['query' => ['Type' => 'list', 'ProjectNames' => 'default']]);
 echo (string)$response->getBody();
