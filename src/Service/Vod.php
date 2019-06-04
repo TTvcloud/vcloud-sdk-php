@@ -29,10 +29,26 @@ class Vod extends V4Curl {
         return $m["query"];
     }
 
-    public function getUploadAuthToken(string $space)
+    /*
+     * Version:
+    * */
+    public function getUploadAuthToken(string $space, string $version = "v1")
     {
-        $token = [];
+        $token = ["Version" => $version];
 
+        switch ($version) {
+        case "v1":
+            $this->getUploadAuthTokenV1($space, $token);
+        default :
+            $token["Version"] = "v1";
+            $this->getUploadAuthTokenV1($space, $token);
+        }
+
+        return base64_encode(json_encode($token));
+    }
+
+    private function getUploadAuthTokenV1(string $space, array &$token)
+    {
         $url = $this->getRequestUrl("ApplyUpload", ["query" => ["SpaceName" => $space]]);
         $m = parse_url($url);
 
@@ -42,9 +58,6 @@ class Vod extends V4Curl {
         $m = parse_url($url);
 
         $token["CommitUpload"] = $m["query"];
-
-
-        return base64_encode(json_encode($token));
     }
 
     protected $apiList = [
