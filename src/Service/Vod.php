@@ -77,7 +77,7 @@ class Vod extends V4Curl {
             'config' => [
                 'query' => [
                     'Action' => 'ApplyUpload',
-                    'Version' => '2019-03-05',
+                    'Version' => '2018-01-01',
                 ],
             ]
         ],
@@ -87,7 +87,7 @@ class Vod extends V4Curl {
             'config' => [
                 'query' => [
                     'Action' => 'CommitUpload',
-                    'Version' => '2019-03-05',
+                    'Version' => '2018-01-01',
                 ],
             ]
         ],
