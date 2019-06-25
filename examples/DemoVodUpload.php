@@ -20,15 +20,9 @@ echo (string)$response->getBody();
 echo "\nstaging-3:初始化上传\n";
 $uploadAddress = json_decode((string)$response->getBody(), true);
 
-$oid = $uploadAddress['Result']['UploadAddress']['Oid'];
+$oid = $uploadAddress['Result']['UploadAddress']['StoreInfos'][0]['StoreUri'];
 $session = $uploadAddress['Result']['UploadAddress']['SessionKey'];
-$auth = $uploadAddress['Result']['UploadAddress']['UploadAuth'];
-
-$response = Tos::getInstance()->request('InitUpload', [
-    'replace' => ['ObjectName' => $oid], 
-    'headers' => ['Authorization' => $auth]
-]);
-echo (string)$response->getBody();
+$auth = $uploadAddress['Result']['UploadAddress']['StoreInfos'][0]['Auth'];
 
 echo "\nstaging-4:分片上传\n";
 $uploadInfo = json_decode((string)$response->getBody(), true);
@@ -43,16 +37,7 @@ $response = Tos::getInstance()->request('Upload', [
 ]);
 echo (string)$response->getBody();
 
-echo "\nstaging-5:tos回写上传成功\n";
-$response = Tos::getInstance()->request('CommitUpload', [
-    'replace' => ['ObjectName' => $oid], 
-    'headers' => ['Authorization' => $auth],
-    'query' => ['uploadID' => $uploadID],
-    'body' => "0:$crc32"
-]);
-echo (string)$response->getBody();
-
-echo "\nstaing-6:确认上传\n";
-$response = Vod::getInstance()->request('CommitUpload', ['query' => ['SpaceName' => $space], 'json' => ['Oid' => $oid, 'SessionKey' => $session]]);
+echo "\nstaing-5:确认上传\n";
+$response = Vod::getInstance()->request('CommitUpload', ['query' => ['SpaceName' => $space], 'json' => ['SessionKey' => $session]]);
 echo (string)$response->getBody();
 
