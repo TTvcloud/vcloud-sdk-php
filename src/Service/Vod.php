@@ -28,7 +28,7 @@ class Vod extends V4Curl {
             $token = ["Version" => $version];
             $token["GetPlayInfoToken"] = parse_url($this->getRequestUrl("GetPlayInfo", $config))["query"];
             return base64_encode(json_encode($token));
-        case "v0":
+        case "v0": // deprecated func
             $url = $this->getRequestUrl("GetPlayInfo", $config);
             $m = parse_url($url);
             return $m["query"];
@@ -135,6 +135,16 @@ class Vod extends V4Curl {
                 'query' => [
                     'Action' => 'SetVideoPublishStatus',
                     'Version' => '2018-01-01',
+                ],
+            ]
+        ],
+        'RedirectPlay' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'RedirectPlay',
+                    'Version' => '2019-03-15',
                 ],
             ]
         ],
