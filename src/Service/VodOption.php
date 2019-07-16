@@ -2,7 +2,7 @@
 
 namespace Vcloud\Service;
 
-class Option
+class VodOption
 {
     public static $VOD_TPL_OBJ = 'tplv-vod-obj';
     public static $VOD_TPL_NOOP = 'tplv-vod-noop';
@@ -72,36 +72,36 @@ class Option
 
     public function setVodTplObj()
     {
-        $this->tpl = Option::$VOD_TPL_OBJ;
+        $this->tpl = VodOption::$VOD_TPL_OBJ;
     }
 
     public function setVodNoop()
     {
-        $this->tpl = Option::$VOD_TPL_NOOP;
+        $this->tpl = VodOption::$VOD_TPL_NOOP;
     }
 
     public function setVodSig()
     {
-        $this->tpl = Option::$VOD_TPL_SIG;
+        $this->tpl = VodOption::$VOD_TPL_SIG;
     }
 
     public function setVodTplCenterCrop(int $weight, int $height)
     {
-        $this->tpl = Option::$VOD_TPL_CENTER_CROP;
+        $this->tpl = VodOption::$VOD_TPL_CENTER_CROP;
         $this->w = $weight;
         $this->h = $height;
     }
 
     public function setVodTplSmartCrop(int $weight, int $height)
     {
-        $this->tpl = Option::$VOD_TPL_SMART_CROP;
+        $this->tpl = VodOption::$VOD_TPL_SMART_CROP;
         $this->w = $weight;
         $this->h = $height;
     }
 
     public function setVodTplResize(int $weight, int $height)
     {
-        $this->tpl = Option::$VOD_TPL_RESIZE;
+        $this->tpl = VodOption::$VOD_TPL_RESIZE;
         $this->w = $weight;
         $this->h = $height;
     }

@@ -102,23 +102,23 @@ class Vod extends V4Curl
         return array('MainDomain' => $mainDomain, 'BackupDomain' => $backupDomain);
     }
 
-    public function getPosterUrl(string $space, string $uri, array $fallbackWeights, Option $opt)
+    public function getPosterUrl(string $space, string $uri, array $fallbackWeights, VodOption $opt)
     {
         $domainInfo = $this->getDomainInfo($space, $fallbackWeights);
-        $proto = Option::$HTTP;
+        $proto = VodOption::$HTTP;
         if ($opt->getHttps()) {
-            $proto = Option::$HTTPS;
+            $proto = VodOption::$HTTPS;
         }
-        $format = Option::$FORMAT_ORIGINAL;
+        $format = VodOption::$FORMAT_ORIGINAL;
         if (!empty($opt->getFormat())) {
             $format = $opt->getFormat();
         }
-        $tpl = Option::$VOD_TPL_NOOP;
+        $tpl = VodOption::$VOD_TPL_NOOP;
         if (!empty($opt->getTpl())) {
             $tpl = $opt->getTpl();
         }
 
-        if ($tpl == Option::$VOD_TPL_OBJ || $tpl == Option::$VOD_TPL_NOOP) {
+        if ($tpl == VodOption::$VOD_TPL_OBJ || $tpl == VodOption::$VOD_TPL_NOOP) {
             $tpl = $opt->getTpl();
         } else {
             $tpl = sprintf('%s:%d:%d', $opt->getTpl(), $opt->getW(), $opt->getH());
@@ -129,14 +129,14 @@ class Vod extends V4Curl
         return array('MainUrl' => $mainUrl, 'BackupUrl' => $backupUrl);
     }
 
-    public function getImageUrl(string $space, string $uri, array $fallbackWeights, Option $opt)
+    public function getImageUrl(string $space, string $uri, array $fallbackWeights, VodOption $opt)
     {
         $domainInfo = $this->getDomainInfo($space, $fallbackWeights);
-        $proto = Option::$HTTP;
+        $proto = VodOption::$HTTP;
         if ($opt->getHttps()) {
-            $proto = Option::$HTTPS;
+            $proto = VodOption::$HTTPS;
         }
-        $format = Option::$FORMAT_ORIGINAL;
+        $format = VodOption::$FORMAT_ORIGINAL;
         if (!empty($opt->getFormat())) {
             $format = $opt->getFormat();
         }
