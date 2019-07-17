@@ -5,6 +5,7 @@ use Vcloud\Service\VodOption;
 
 $space = "your spaceName";
 $uri = 'your uri';
+// set fallbackWeights if necessary
 $fallbackWeights = ['p1.test.com' => 10, 'p3.test.com' => 5];
 
 // GetCdnDomainWeights demo

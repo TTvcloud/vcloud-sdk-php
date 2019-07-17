@@ -155,6 +155,8 @@ class Vod extends V4Curl
         }
         if (!empty($sigKey)) {
             $sign = base64_encode((hash_hmac('sha1', $sigTxt, $sigKey, true)));
+            // url safe base64_encode compatible with go base64
+            $sign = str_replace(array('+','/'),array('-','_'),$sign);
             $arr = $opt->getKV();
             if ($arr == NULL) {
                 $arr = array('sig' => $sign);
@@ -272,7 +274,17 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'RedirectPlay',
-                    'Version' => '2019-03-15',
+                    'Version' => '2018-01-01',
+                ],
+            ]
+        ],
+        'GetOriginVideoPlayInfo' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetOriginVideoPlayInfo',
+                    'Version' => '2018-01-01',
                 ],
             ]
         ],
