@@ -39,29 +39,30 @@ class Vod extends V4Curl {
         }
     }
 
-    public function getUploadAuthToken(string $space, string $version = "v1")
+    // 开放参数设置
+    public function getUploadAuthToken(array $config = [], string $version = "v1")
     {
         $token = ["Version" => $version];
 
         switch ($version) {
         case "v1":
-            $this->getUploadAuthTokenV1($space, $token);
+            $this->getUploadAuthTokenV1($config, $token);
         default :
             $token["Version"] = "v1";
-            $this->getUploadAuthTokenV1($space, $token);
+            $this->getUploadAuthTokenV1($config, $token);
         }
 
         return base64_encode(json_encode($token));
     }
 
-    private function getUploadAuthTokenV1(string $space, array &$token)
+    private function getUploadAuthTokenV1(array $config, array &$token)
     {
-        $url = $this->getRequestUrl("ApplyUpload", ["query" => ["SpaceName" => $space]]);
+        $url = $this->getRequestUrl("ApplyUpload", $config);
         $m = parse_url($url);
 
         $token["ApplyUploadToken"] = $m["query"];
 
-        $url = $this->getRequestUrl("CommitUpload", ["query" => ["SpaceName" => $space]]);
+        $url = $this->getRequestUrl("CommitUpload", $config);
         $m = parse_url($url);
 
         $token["CommitUpload"] = $m["query"];
