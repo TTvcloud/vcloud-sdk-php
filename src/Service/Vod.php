@@ -3,6 +3,7 @@
 namespace Vcloud\Service;
 
 use Vcloud\Base\V4Curl;
+use Vcloud\Service\Tos;
 
 class Vod extends V4Curl
 {
@@ -27,6 +28,12 @@ class Vod extends V4Curl
         ];
     }
 
+    public function getSpace(array $query)
+    {
+        $response = $this->request('GetSpace', $query);
+        return $response->getBody();
+    }
+
     public function getPlayAuthToken(array $config = [], string $version = "v1")
     {
         switch ($version) {
@@ -45,19 +52,35 @@ class Vod extends V4Curl
         }
     }
 
+    public function getPlayInfo(array $query)
+    {
+        $response = $this->request('GetPlayInfo', $query);
+        return (string) $response->getBody();
+    }
+
+    public function getOriginVideoPlayInfo(array $query)
+    {
+        $response = $this->request('GetOriginVideoPlayInfo', $query);
+        return (string) $response->getBody();
+    }
+
+    public function getRedirectPlay(array $query)
+    {
+        $response = $this->getRequestUrl('RedirectPlay', $query);
+        return $response;
+    }
+
     // 开放参数设置
     public function getUploadAuthToken(array $config = [], string $version = "v1")
     {
         $token = ["Version" => $version];
-
         switch ($version) {
             case "v1":
                 $this->getUploadAuthTokenV1($config, $token);
-            default :
+            default:
                 $token["Version"] = "v1";
                 $this->getUploadAuthTokenV1($config, $token);
         }
-
         return base64_encode(json_encode($token));
     }
 
@@ -74,6 +97,93 @@ class Vod extends V4Curl
         $token["CommitUpload"] = $m["query"];
     }
 
+    public function applyUpload(array $query)
+    {
+        $response = $this->request('ApplyUpload', $query);
+        return (string) $response->getBody();
+    }
+
+    public function commitUpload(array $query)
+    {
+        $response = $this->request('CommitUpload', $query);
+        return (string) $response->getBody();
+    }
+
+    public function upload(string $spaceName, string $filePath, string $fileType)
+    {
+        if (!file_exists($filePath)) {
+            return array(-1, "file not exists", "", "");
+        }
+        $content = file_get_contents($filePath);
+        $crc32 = dechex(crc32($content));
+
+        $response = $this->applyUpload(['query' => ['SpaceName' => $spaceName]]);
+        $applyResponse = json_decode($response, true);
+        if (isset($applyResponse["ResponseMetadata"]["Error"])) {
+            return array(-1, $applyResponse["ResponseMetadata"]["Error"]["Message"], "", "");
+        }
+        $oid = $applyResponse['Result']['UploadAddress']['StoreInfos'][0]['StoreUri'];
+        $session = $applyResponse['Result']['UploadAddress']['SessionKey'];
+        $auth = $applyResponse['Result']['UploadAddress']['StoreInfos'][0]['Auth'];
+
+        $response = Tos::getInstance()->request('Upload', [
+            'replace' => ['ObjectName' => $oid],
+            'headers' => ['Authorization' => $auth, 'Content-CRC32' => $crc32],
+            'query' => ['partNumber' => 0],
+            'body' => $content
+        ]);
+        $uploadResponse = json_decode((string) $response->getBody(), true);
+        if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
+            return array(-1, "upload file failed", "", "");
+        }
+        return array(0, "", $session, $oid);
+    }
+
+    public function uploadVideo(string $spaceName, string $filePath, array $functions = [])
+    {
+        $resp = $this->upload($spaceName, $filePath, "video");
+        if ($resp[0] != 0) {
+            return $resp[1];
+        }
+        $response = $this->commitUpload(['query' => ['SpaceName' => $spaceName], 'json' => ['SessionKey' => $resp[2], 'Functions' => $functions]]);
+        return (string) $response;
+    }
+
+    public function uploadPoster(string $vid, string $spaceName, string $filePath)
+    {
+        $resp = $this->upload($spaceName, $filePath, "image");
+        if ($resp[0] != 0) {
+            return $resp[1];
+        }
+        $response = $this->modifyVideoInfo(['query' => [], 'json' => ['SpaceName' => $spaceName, 'Vid' => $vid, 'Info' => ['PosterUri' => $resp[3]]]]);
+        return (string) $response;
+    }
+
+
+    public function uploadMediaByUrl(array $query)
+    {
+        $response = $this->request('UploadMediaByUrl', $query);
+        return (string) $response->getBody();
+    }
+
+    public function modifyVideoInfo(array $query)
+    {
+        $response = $this->request('ModifyVideoInfo', $query);
+        return (string) $response->getBody();
+    }
+
+    public function startTranscode(array $query)
+    {
+        $response = $this->request('StartTranscode', $query);
+        return (string) $response->getBody();
+    }
+
+    public function setVideoPublishStatus(array $query)
+    {
+        $response = $this->request('SetVideoPublishStatus', $query);
+        return (string) $response->getBody();
+    }
+
     private function getDomainInfo(string $space, array $fallbackWeights)
     {
         if (!empty($this->lastDomainUpdateTime)) {
@@ -83,9 +193,8 @@ class Vod extends V4Curl
                 return $this->packDomainInfo($domainArray);
             }
         }
-
         $this->lastDomainUpdateTime = time();
-        $response = Vod::getInstance()->request('GetCdnDomainWeights', ['query' => ['SpaceName' => $space]]);
+        $response = $this->request('GetCdnDomainWeights', ['query' => ['SpaceName' => $space]]);
         $respJson = json_decode($response->getBody(), true);
         if (array_key_exists('Error', $respJson['ResponseMetadata']) || !is_array($respJson['Result'][$space])) {
             $this->domainCache[$space] = $fallbackWeights;
@@ -127,49 +236,6 @@ class Vod extends V4Curl
 
         $mainUrl = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['MainDomain'], $uri, $tpl, $format);
         $backupUrl = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['BackupDomain'], $uri, $tpl, $format);
-        return array('MainUrl' => $mainUrl, 'BackupUrl' => $backupUrl);
-    }
-
-    public function getImageUrl(string $space, string $uri, array $fallbackWeights, VodOption $opt)
-    {
-        $domainInfo = $this->getDomainInfo($space, $fallbackWeights);
-        $proto = VodOption::$HTTP;
-        if ($opt->getHttps()) {
-            $proto = VodOption::$HTTPS;
-        }
-        $format = VodOption::$FORMAT_ORIGINAL;
-        if (!empty($opt->getFormat())) {
-            $format = $opt->getFormat();
-        }
-        $sigKey = '';
-        if (!empty($opt->getSig())) {
-            $sigKey = $opt->getSig();
-        }
-
-        $path = sprintf('/%s~%s.%s', $uri, $opt->getTpl(), $format);
-        $sigTxt = $path;
-        if (!empty($opt->getKV())) {
-            if (!empty(sigKey) && !empty($opt->getKV()['sig'])) {
-                throw new Exception("cant specify sig key in kv and option both the time.");
-            }
-            $sigTxt = sprintf('%s?%s', $path, http_build_query($opt->getKV(), '', '&'));
-        }
-        if (!empty($sigKey)) {
-            $sign = base64_encode((hash_hmac('sha1', $sigTxt, $sigKey, true)));
-            // url safe base64_encode compatible with go base64
-            $sign = str_replace(array('+','/'),array('-','_'),$sign);
-            $arr = $opt->getKV();
-            if ($arr == NULL) {
-                $arr = array('sig' => $sign);
-            } else {
-                $arr['sig'] = $sign;
-            }
-            var_dump($arr);
-            $path = sprintf('%s?%s', $path, http_build_query($arr, '', '&'));
-        }
-
-        $mainUrl = sprintf('%s://%s%s', $proto, $domainInfo['MainDomain'], $path);
-        $backupUrl = sprintf('%s://%s%s', $proto, $domainInfo['BackupDomain'], $path);
         return array('MainUrl' => $mainUrl, 'BackupUrl' => $backupUrl);
     }
 
@@ -296,6 +362,16 @@ class Vod extends V4Curl
                 'query' => [
                     'Action' => 'GetCdnDomainWeights',
                     'Version' => '2019-07-01',
+                ],
+            ]
+        ],
+        'ModifyVideoInfo' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'ModifyVideoInfo',
+                    'Version' => '2018-01-01',
                 ],
             ]
         ],

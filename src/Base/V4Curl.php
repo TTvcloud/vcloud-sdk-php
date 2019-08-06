@@ -1,7 +1,9 @@
 <?php
+
 /**
  * creator: maigohuang
- */ 
+ */
+
 namespace Vcloud\Base;
 
 use GuzzleHttp\Client;
@@ -32,6 +34,18 @@ abstract class V4Curl extends BaseCurl
         ]);
     }
 
+    public function setAccessKey($ak) {
+        if ($ak != "") {
+            $this->ak = $ak;
+        }
+    } 
+
+    public function setSecretKey($sk) {
+        if ($sk != "") {
+            $this->sk = $sk;
+        }
+    } 
+
     protected function v4Sign()
     {
         return function (callable $handler) {
@@ -50,10 +64,10 @@ abstract class V4Curl extends BaseCurl
             if ($this->ak != "" && $this->sk != "") {
                 $credentials['ak'] = $this->ak;
                 $credentials['sk'] = $this->sk;
-            }elseif (getenv("VCLOUD_ACCESSKEY") != "" && getenv("VCLOUD_SECRETKEY") != "") {
+            } elseif (getenv("VCLOUD_ACCESSKEY") != "" && getenv("VCLOUD_SECRETKEY") != "") {
                 $credentials['ak'] = getenv("VCLOUD_ACCESSKEY");
                 $credentials['sk'] = getenv("VCLOUD_SECRETKEY");
-            }else {
+            } else {
                 $json = json_decode(file_get_contents(getenv('HOME') . '/.vcloud/config'), true);
                 if (is_array($json) && isset($json['ak']) && isset($json['sk'])) {
                     $credentials = array_merge($credentials, $json);
@@ -72,7 +86,7 @@ abstract class V4Curl extends BaseCurl
         $info = array_merge($defaultConfig, $config_api);
 
         $method = $info['method'];
-        $request = new Request($method, $info['host'].$info['url'].'?'.http_build_query($config['query']));
+        $request = new Request($method, $info['host'] . $info['url'] . '?' . http_build_query($config['query']));
 
         $credentials = $this->prepareCredentials($config['v4_credentials']);
         $v4 = new SignatureV4();

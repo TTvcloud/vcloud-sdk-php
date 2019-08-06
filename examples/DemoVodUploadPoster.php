@@ -8,9 +8,9 @@ $client = Vod::getInstance();
 // $client->setAccessKey($ak);
 // $client->setSecretKey($sk);
 
-$vid = "";
 $space = "";
+$vid = "";
 
-echo "\n修改发布状态\n";
-$response = $client->SetVideoPublishStatus(['json' => ['Vid' => $vid, 'SpaceName' => $space, 'Status' => 'Published']]);
+echo "\n上传封面图\n";
+$response = $client->uploadPoster($vid, $space, "/Users/tangxiaodong/test.jpg");
 echo $response;

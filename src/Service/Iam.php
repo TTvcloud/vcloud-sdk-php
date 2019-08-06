@@ -1,10 +1,12 @@
 <?php
+
 namespace Vcloud\Service;
 
 use Vcloud\Base\V4Curl;
 
-class Iam extends V4Curl {
-	protected function getConfig()
+class Iam extends V4Curl
+{
+    protected function getConfig()
     {
         return [
             'host' => 'https://iam.bytedanceapi.com',
@@ -19,6 +21,12 @@ class Iam extends V4Curl {
                 ],
             ],
         ];
+    }
+
+    public function listUsers(array $query = [])
+    {
+        $response = $this->request('ListUsers', $query);
+        return $response->getBody();
     }
 
     protected $apiList = [

@@ -3,14 +3,15 @@ require('../vendor/autoload.php');
 
 use Vcloud\Service\Vod;
 
+
 $client = Vod::getInstance();
 // call below method if you dont set ak and sk in ～/.vcloud/config
 // $client->setAccessKey($ak);
 // $client->setSecretKey($sk);
 
-$vid = "";
-$space = "";
 
-echo "\n修改发布状态\n";
-$response = $client->SetVideoPublishStatus(['json' => ['Vid' => $vid, 'SpaceName' => $space, 'Status' => 'Published']]);
+echo "\n上传视频\n";
+$space = "";
+$file = "";
+$response = $client->uploadVideo($space, $file, [['Name' => 'Snapshot', 'Input' => ['SnapshotTime' => 2.3]], ['Name' => 'GetMeta']]);
 echo $response;

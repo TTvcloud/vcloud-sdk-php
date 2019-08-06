@@ -2,27 +2,19 @@
 require('../vendor/autoload.php');
 use Vcloud\Service\Iam;
 
+$client = Iam::getInstance();
+// call below method if you dont set ak and sk in ～/.vcloud/config
+// $client->setAccessKey($ak);
+// $client->setSecretKey($sk);
+
 echo "\nDemo 1\n";
-$response = Iam::getInstance()->request('ListUsers');
-echo (string)$response->getBody();
+$response = $client->listUsers([]);
+echo $response;
 
 echo "\nDemo 2\n";
-$response = Iam::getInstance()->request('ListUsers', [], 'cn-north-1');
-echo (string)$response->getBody();
+$response = $client->listUsers(['query'=>['Limit'=>10, 'Offset'=>0]]);
+echo $response;
 
 echo "\nDemo 3\n";
-$response = Iam::getInstance()->request('ListUsers', ['query'=>['Limit'=>10, 'Offset'=>0]], 'cn-north-1');
-echo (string)$response->getBody();
-
-echo "\nDemo 4\n";
-$ak = "YourAK";
-$sk = "YourSK";
-$response = Iam::getInstance()->request('ListUsers', ['v4_credentials'=>['ak'=>$ak, 'sk'=>$sk], 'query'=>['Limit'=>10, 'Offset'=>0]], 'cn-north-1');
-echo (string)$response->getBody();
-
-
-echo "\nDemo 5\n";
-$client = new Iam($ak, $sk);
-$response = $client->request('ListUsers');
-echo (string)$response->getBody();
-
+$response = $client->listUsers(['v4_credentials'=>['ak'=>"$ak", 'sk'=>$sk], 'query'=>['Limit'=>10, 'Offset'=>0]]);
+echo $response;
