@@ -1,6 +1,5 @@
 <?php
 require('../vendor/autoload.php');
-
 use Vcloud\Service\Vod;
 
 $client = Vod::getInstance();
@@ -10,7 +9,8 @@ $client = Vod::getInstance();
 
 $vid = "";
 $space = "";
+$tid = "";
 
-echo "\n修改发布状态\n";
-$response = $client->SetVideoPublishStatus(['json' => ['Vid' => $vid, 'SpaceName' => $space, 'Status' => 'Published']]);
+echo "\n开始转码\n";
+$response = $client->startTranscode(['query' => ['TemplateId' => $tid], 'json' => ['Vid' => $vid, 'Priority' => 0]]);
 echo $response;

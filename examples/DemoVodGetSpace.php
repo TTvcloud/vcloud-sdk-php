@@ -8,9 +8,6 @@ $client = Vod::getInstance();
 // $client->setAccessKey($ak);
 // $client->setSecretKey($sk);
 
-$vid = "";
-$space = "";
-
-echo "\n修改发布状态\n";
-$response = $client->SetVideoPublishStatus(['json' => ['Vid' => $vid, 'SpaceName' => $space, 'Status' => 'Published']]);
+echo "\n获取Space列表\n";
+$response = $client->getSpace(['query' => ['Type' => 'list', 'ProjectNames' => 'default']]);
 echo $response;

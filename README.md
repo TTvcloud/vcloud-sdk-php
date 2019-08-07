@@ -3,89 +3,74 @@
 ```shell
 composer require ttvcloud/vcloud-sdk-php
 ```
-####aksk配置
+### AK/SK设置
+- 在代码里显示调用VodService的方法setAccessKey/setSecretKey
 
-1. 配置在业务代码中，直接使用
+- 在当前环境变量中分别设置 VCLOUD_ACCESSKEY="your ak"  VCLOUD_SECRETKEY = "your sk"
 
-2. 配置相关的环境变量`VCLOUD_ACCESSKEY`,`VCLOUD_SECRETKEY`
+- json格式放在～/.vcloud/config中，格式为：{"ak":"your ak","sk":"your sk"}
 
-3. 配置在默认的系统文件中`~/./vcloud/config`
+以上优先级依次降低，建议在代码里显示设置，以便问题排查
 
-   config文件结构
+### API
 
-   ```json
-   {
-       "ak":"your ak",
-       "sk":"your sk"
-   }
-   ```
+#### 上传
 
-##功能列表
+- 通过指定url地址上传
 
->敬请期待
+[uploadMediaByUrl](https://open.bytedance.com/docs/4/4652/)
 
-##Demo
+- 服务端直接上传
 
-1. 直接调用，会去获取`~/.vcloud/config`下的aksk信息，并且使用服务默认的region信息(这里使用cn-north-1)。
 
-```php
-<?php
-require('../vendor/autoload.php');
-use Vcloud\Service\Iam;
-$response = Iam::getInstance()->request('ListUsers');
-echo (string)$response->getBody();
-```
+上传视频包括 [applyUpload](https://open.bytedance.com/docs/4/2915/) 和 [commitUpload](https://open.bytedance.com/docs/4/2916/) 两步
 
-2. 在有多个region的服务的场景，支持显示的指定调用的目标region。
+上传封面图包括 [applyUpload](https://open.bytedance.com/docs/4/2915/) 和 [modifyVideoInfo](https://open.bytedance.com/docs/4/4367/) 两步
 
-```php
-<?php
-require('../vendor/autoload.php');
-use Vcloud\Service\Iam;
-$response = Iam::getInstance()->request('ListUsers', [], 'cn-north-1');
-echo (string)$response->getBody();
-```
 
-3. 参数传递支持[guzzle的传参模式](<http://docs.guzzlephp.org/en/stable/request-options.html>)。
+为方便用户使用，封装方法 uploadVideo 和 uploadPoster， 一步上传
 
-```php
-<?php
-require('../vendor/autoload.php');
-use Vcloud\Service\Iam;
-$response = Iam::getInstance()->request('ListUsers', ['query'=>['Limit'=>10, 'Offset'=>0]], 'cn-north-1');
-echo (string)$response->getBody();
-```
 
-4. 也支持显示的传递aksk的场景。
+#### 转码
+[startTranscode](https://open.bytedance.com/docs/4/1670/)
 
-```php
-<?php
-require('../vendor/autoload.php');
-use Vcloud\Service\Iam;
-$response = Iam::getInstance()->request('ListUsers', ['v4_credentials'=>['ak'=>$ak, 'sk'=>$sk], 'query'=>['Limit'=>10, 'Offset'=>0]], 'cn-north-1');
-echo (string)$response->getBody();
-```
 
-5. 也支持独立初始化client的场景
+#### 发布
+[setVideoPublishStatus](https://open.bytedance.com/docs/4/4709/)
 
-```php
-<?php
-require('../vendor/autoload.php');
-use Vcloud\Service\Iam;
-$client = new Iam($ak, $sk);
-$response = $client->request('ListUsers');
-echo (string)$response->getBody();
-```
 
-##封面图和图片功能
+#### 播放
+[getPlayInfo](https://open.bytedance.com/docs/4/2918/)
 
-1.GetDomainInfo 产品化对外域名调度接口，根据space_name获取CDN域名（定期获取，本地缓存）
+[getOriginVideoPlayInfo](https://open.bytedance.com/docs/4/11148/)
+
+[getRedirectPlay](https://open.bytedance.com/docs/4/9205/)
+
+#### 封面图
+[getPosterUrl]()
+
+#### token相关
+[getUploadAuthToken](https://open.bytedance.com/docs/4/6275/)
+
+[getPlayAuthToken](https://open.bytedance.com/docs/4/6275/)
+
+PS: 上述两个接口和 [getRedirectPlay](https://open.bytedance.com/docs/4/9205/) 接口中均含有 X-Amz-Expires 这个参数
+
+关于这个参数的解释为：设置返回的playAuthToken或uploadToken或follow 302地址的有效期，目前服务端默认该参数为15min（900s），如果用户认为该有效期过长，可以传递该参数来控制过期时间
+。
+
+
+#### 更多示例参见
+example
+
+
+##封面图
+
+1.GetDomainInfo 产品化对外域名调度接口，根据spaceName获取CDN域名（定期获取，本地缓存）
 
 2.getPosterUrl 获取封面图地址
 
-3.getImageUrl 获取除封面图外其它图片地址
-
-2/3 包含四个参数，分别为：
+ 包含四个参数，分别为：
 
 1）space 空间名称
 
@@ -95,16 +80,14 @@ echo (string)$response->getBody();
 
 4）option参数
 
-VOD_TPL_OBJ: 获取图片源文件，无参数
+- VOD_TPL_OBJ: 获取图片源文件，无参数
 
-VOD_TPL_NOOP: 获取压缩的原图，无参数(png为无损压缩，如果编码为png可能会变大)
+- VOD_TPL_NOOP: 获取压缩的原图，无参数(png为无损压缩，如果编码为png可能会变大)
 
-VOD_TPL_RESIZE: 仅下采样的等比缩略，需要参数宽高。如果某条边为0，则以另一条边进行等比缩略，否则以宽高比较短的来
+- VOD_TPL_RESIZE: 仅下采样的等比缩略，需要参数宽高。如果某条边为0，则以另一条边进行等比缩略，否则以宽高比较短的来
 
-VOD_TPL_CENTER_CROP: 居中裁剪，需要参数宽高。居中裁剪尽量少的像素到指定的宽高比后缩略为指定的裁剪宽高，如果某条边为0，则使用原图的对应边的分辨率
+- VOD_TPL_CENTER_CROP: 居中裁剪，需要参数宽高。居中裁剪尽量少的像素到指定的宽高比后缩略为指定的裁剪宽高，如果某条边为0，则使用原图的对应边的分辨率
 
-VOD_TPL_SMART_CROP: 智能裁剪，需要参数宽高。智能分析了图片内容，尽可能保留图片中想要保留的内容。
+- VOD_TPL_SMART_CROP: 智能裁剪，需要参数宽高。智能分析了图片内容，尽可能保留图片中想要保留的内容。
 
-VOD_TPL_SIG: 带签名鉴权的图片地址
-
-示例参见demo。
+- VOD_TPL_SIG: 带签名鉴权的图片地址
