@@ -7,44 +7,47 @@
 namespace Vcloud\Base;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Handler\CurlHandler;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\ClientException;
 
-abstract class V4Curl extends BaseCurl 
+abstract class V4Curl extends Singleton
 {
-    protected $ak = "";
-    protected $sk = "";
+    protected $client = null;
+    protected $stack = null;
+    protected $region = '';
+    protected $ak = '';
+    protected $sk = '';
 
-    public function __construct($ak = "", $sk = "")
+    public function __construct()
     {
-        $this->ak = $ak;
-        $this->sk = $sk;
-
+        $this->region = func_get_arg(0);
         $this->stack = HandlerStack::create();
         $this->stack->push($this->replaceUri());
         $this->stack->push($this->v4Sign());
 
-        $config = $this->getConfig();
+        $config = $this->getConfig($this->region);
         $this->client = new Client([
             'handler' => $this->stack,
             'base_uri' => $config['host'],
         ]);
     }
 
-    public function setAccessKey($ak) {
+    public function setAccessKey($ak)
+    {
         if ($ak != "") {
             $this->ak = $ak;
         }
-    } 
+    }
 
-    public function setSecretKey($sk) {
+    public function setSecretKey($sk)
+    {
         if ($sk != "") {
             $this->sk = $sk;
         }
-    } 
+    }
 
     protected function v4Sign()
     {
@@ -58,7 +61,9 @@ abstract class V4Curl extends BaseCurl
         };
     }
 
-    private function prepareCredentials(array $credentials) 
+    abstract protected function getConfig(string $region);
+
+    private function prepareCredentials(array $credentials)
     {
         if (!isset($credentials['ak']) || !isset($credentials['sk'])) {
             if ($this->ak != "" && $this->sk != "") {
@@ -81,7 +86,7 @@ abstract class V4Curl extends BaseCurl
     {
         $config_api = isset($this->apiList[$api]) ? $this->apiList[$api] : false;
 
-        $defaultConfig = $this->getConfig();
+        $defaultConfig = $this->getConfig($this->region);
         $config = $this->configMerge($defaultConfig['config'], $config_api['config'], $config);
         $info = array_merge($defaultConfig, $config_api);
 
@@ -92,5 +97,71 @@ abstract class V4Curl extends BaseCurl
         $v4 = new SignatureV4();
 
         return $v4->signRequestToUrl($request, $credentials);
+    }
+
+
+    public function request($api, array $config = [])
+    {
+        $config_api = isset($this->apiList[$api]) ? $this->apiList[$api] : false;
+
+        $defaultConfig = $this->getConfig($this->region);
+        $config = $this->configMerge($defaultConfig['config'], $config_api['config'], $config);
+        $info = array_merge($defaultConfig, $config_api);
+        $info['config'] = $config;
+
+        $method = $info['method'];
+        try {
+            $response = $this->client->request($method, $info['url'], $info['config']);
+            return $response;
+        } catch (ClientException $exception) {
+            return $exception->getResponse();
+        }
+    }
+
+    protected function configMerge($c1, $c2, $c3)
+    {
+        $result = $c1;
+        foreach ($c2 as $k => $v) {
+            if (isset($result[$k]) && is_array($result[$k]) && is_array($v)) {
+                $result[$k] = array_merge($result[$k], $v);
+            } else {
+                $result[$k] = $v;
+            }
+        }
+
+        foreach ($c3 as $k => $v) {
+            if (isset($result[$k]) && is_array($result[$k]) && is_array($v)) {
+                $result[$k] = array_merge($result[$k], $v);
+            } else {
+                $result[$k] = $v;
+            }
+        }
+        return $result;
+    }
+
+    protected function replaceUri()
+    {
+        return function (callable $handler) {
+            return function (RequestInterface $request, array $options) use ($handler) {
+                if (isset($options['replace'])) {
+                    $replace = $options['replace'];
+                    $uri = (string) $request->getUri();
+
+                    $func = function ($matches) use ($replace) {
+                        $key = substr($matches[0], 1, -1);
+                        return $replace[$key];
+                    };
+                    $uri = preg_replace_callback('/\{.*?\}/', $func, $uri);
+
+                    $func2 = function ($matches) use ($replace) {
+                        $key = substr($matches[0], 3, -3);
+                        return $replace[$key];
+                    };
+                    $uri = preg_replace_callback('/%7B.*?%7D/', $func2, $uri);
+                    $request = $request->withUri(new Uri($uri));
+                }
+                return $handler($request, $options);
+            };
+        };
     }
 }

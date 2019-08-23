@@ -1,8 +1,23 @@
-##使用方式
-####composer引用
-```shell
+## 使用方式
+
+### composer引用
+```
 composer require ttvcloud/vcloud-sdk-php
 ```
+
+### 地域Region设置
+- 目前已开放三个地域设置，分别为
+  ```
+  - cn-north-1 (默认)
+  - ap-singapore-1
+  - us-east-1
+  ```
+- 默认为cn-north-1，如果需要调用其它地域服务，请在初始化函数getInstance中传入指定地域region，例如：
+  ```
+  $client = Vod::getInstance('us-east-1');
+  ```
+- 注意：IAM模块目前只开放cn-north-1区域
+
 ### AK/SK设置
 - 在代码里显示调用VodService的方法setAccessKey/setSecretKey
 
@@ -47,7 +62,7 @@ composer require ttvcloud/vcloud-sdk-php
 [getRedirectPlay](https://open.bytedance.com/docs/4/9205/)
 
 #### 封面图
-[getPosterUrl]()
+[getPosterUrl](https://open.bytedance.com/docs/4/5335/)
 
 #### token相关
 [getUploadAuthToken](https://open.bytedance.com/docs/4/6275/)
