@@ -11,21 +11,58 @@ class Vod extends V4Curl
     private $lastDomainUpdateTime;
     private $domainCache = array();
 
-    protected function getConfig()
+    protected function getConfig(string $region)
     {
-        return [
-            'host' => 'https://vod.bytedanceapi.com',
-            'config' => [
-                'timeout' => 5.0,
-                'headers' => [
-                    'Accept' => 'application/json'
-                ],
-                'v4_credentials' => [
-                    'region' => 'cn-north-1',
-                    'service' => 'vod',
-                ],
-            ],
-        ];
+        switch ($region) {
+            case 'cn-north-1':
+                $config = [
+                    'host' => 'https://vod.bytedanceapi.com',
+                    'config' => [
+                        'timeout' => 5.0,
+                        'headers' => [
+                            'Accept' => 'application/json'
+                        ],
+                        'v4_credentials' => [
+                            'region' => 'cn-north-1',
+                            'service' => 'vod',
+                        ],
+                    ],
+                ];
+                break;
+            case 'ap-singapore-1':
+                $config = [
+                    'host' => 'https://vod.ap-singapore-1.bytedanceapi.com',
+                    'config' => [
+                        'timeout' => 5.0,
+                        'headers' => [
+                            'Accept' => 'application/json'
+                        ],
+                        'v4_credentials' => [
+                            'region' => 'ap-singapore-1',
+                            'service' => 'vod',
+                        ],
+                    ],
+                ];
+                break;
+            case 'us-east-1':
+                $config = [
+                    'host' => 'https://vod.us-east-1.bytedanceapi.com',
+                    'config' => [
+                        'timeout' => 5.0,
+                        'headers' => [
+                            'Accept' => 'application/json'
+                        ],
+                        'v4_credentials' => [
+                            'region' => 'us-east-1',
+                            'service' => 'vod',
+                        ],
+                    ],
+                ];
+                break;
+            default:
+                throw new \Exception("Cant find the region, please check it carefully");
+        }
+        return $config;
     }
 
     public function getSpace(array $query)
@@ -158,7 +195,6 @@ class Vod extends V4Curl
         $response = $this->modifyVideoInfo(['query' => [], 'json' => ['SpaceName' => $spaceName, 'Vid' => $vid, 'Info' => ['PosterUri' => $resp[3]]]]);
         return (string) $response;
     }
-
 
     public function uploadMediaByUrl(array $query)
     {

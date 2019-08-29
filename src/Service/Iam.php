@@ -6,7 +6,7 @@ use Vcloud\Base\V4Curl;
 
 class Iam extends V4Curl
 {
-    protected function getConfig()
+    protected function getConfig(string $region = '')
     {
         return [
             'host' => 'https://iam.bytedanceapi.com',
