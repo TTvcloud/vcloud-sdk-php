@@ -79,7 +79,7 @@ PS: 上述两个接口和 [getRedirectPlay](https://open.bytedance.com/docs/4/92
 example
 
 
-##封面图
+## 封面图
 
 1.GetDomainInfo 产品化对外域名调度接口，根据spaceName获取CDN域名（定期获取，本地缓存）
 
