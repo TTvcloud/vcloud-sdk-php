@@ -12,5 +12,5 @@ $space = "";
 $vid = "";
 
 echo "\n上传封面图\n";
-$response = $client->uploadPoster($vid, $space, "/Users/tangxiaodong/test.jpg");
+$response = $client->uploadPoster($vid, $space, "your file path");
 echo $response;
