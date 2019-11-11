@@ -3,7 +3,7 @@
 namespace Vcloud\Service;
 
 use Vcloud\Base\V4Curl;
-use Vcloud\Service\Tos;
+use GuzzleHttp\Client;
 
 class Vod extends V4Curl
 {
@@ -146,6 +146,28 @@ class Vod extends V4Curl
         return (string) $response->getBody();
     }
 
+    public function uploadFile(string $uploadHost, $storeInfo, string $filePath)
+    {
+        if (!file_exists($filePath)) {
+            return -1;
+        }
+        $content = file_get_contents($filePath);
+        $crc32 = dechex(crc32($content));
+
+        $body = fopen($filePath, "r");
+        $tosClient = new Client([
+            'base_uri' => "http://" . $uploadHost,
+            'timeout' => 5.0,
+        ]);
+
+        $response = $tosClient->request('PUT', $storeInfo["StoreUri"], ["body" => $body, "headers" => ['Authorization' => $storeInfo["Auth"], 'Content-CRC32' => $crc32]]);
+        $uploadResponse = json_decode((string) $response->getBody(), true);
+        if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
+            return -2;
+        }
+        return 0;
+    }
+
     public function upload(string $spaceName, string $filePath, string $fileType)
     {
         if (!file_exists($filePath)) {
@@ -159,20 +181,15 @@ class Vod extends V4Curl
         if (isset($applyResponse["ResponseMetadata"]["Error"])) {
             return array(-1, $applyResponse["ResponseMetadata"]["Error"]["Message"], "", "");
         }
+        $uploadHost = $applyResponse['Result']['UploadAddress']['UploadHosts'][0];
         $oid = $applyResponse['Result']['UploadAddress']['StoreInfos'][0]['StoreUri'];
         $session = $applyResponse['Result']['UploadAddress']['SessionKey'];
-        $auth = $applyResponse['Result']['UploadAddress']['StoreInfos'][0]['Auth'];
 
-        $response = Tos::getInstance()->request('Upload', [
-            'replace' => ['ObjectName' => $oid],
-            'headers' => ['Authorization' => $auth, 'Content-CRC32' => $crc32],
-            'query' => ['partNumber' => 0],
-            'body' => $content
-        ]);
-        $uploadResponse = json_decode((string) $response->getBody(), true);
-        if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
-            return array(-1, "upload file failed", "", "");
+        $respCode = $this->uploadFile($uploadHost, $applyResponse['Result']['UploadAddress']['StoreInfos'][0], $filePath);
+        if ($respCode != 0) {
+            return array(-1, "upload " . $filePath . " error", "", "");
         }
+
         return array(0, "", $session, $oid);
     }
 
