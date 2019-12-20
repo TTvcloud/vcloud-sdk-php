@@ -68,7 +68,7 @@ class Live extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'CreateStream',
-                    'Version' => '2019-01-01',
+                    'Version' => '2019-10-01',
                 ],
             ]
         ],
