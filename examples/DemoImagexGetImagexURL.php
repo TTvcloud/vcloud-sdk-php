@@ -5,7 +5,7 @@ use Vcloud\Service\ImageXOption;
 
 $client = ImageX::getInstance();
 
-$serviceID = "241hsrmp5z"; // service ID
+$serviceID = ""; // service ID
 $uri = "test";
 $tpl = "tplv-vod-obj";
 $fallbackWeights = ['p1.test.com' => 10, 'p3.test.com' => 5];
