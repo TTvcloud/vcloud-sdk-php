@@ -7,6 +7,10 @@ use GuzzleHttp\Client;
 
 class ImageX extends V4Curl
 {
+	private static $updateInterval = 10;
+    private $lastDomainUpdateTime = 0;
+    private $domainCache = [];
+
     protected function getConfig(string $region)
     {
         switch ($region) {
@@ -88,7 +92,6 @@ class ImageX extends V4Curl
         ]);
 
         $response = $tosClient->request('PUT', $storeInfo["StoreUri"], ["body" => $body, "headers" => ['Authorization' => $storeInfo["Auth"], 'Content-CRC32' => $crc32]]);
-        // var_dump($response);
         $uploadResponse = json_decode((string) $response->getBody(), true);
         if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
             return -2;
@@ -156,6 +159,85 @@ class ImageX extends V4Curl
         return (string) $response;
     }
 
+    // getImagexURL 获取图片地址
+    public function getImageXURL(string $serviceID, string $uri, string $tpl, array $fallbackWeights, ImageXOption $opt)
+    {
+        $domainInfo = $this->getDomainInfo($serviceID, $fallbackWeights);
+
+        $proto = ImageXOption::$HTTP;
+        if ($opt->getHTTPs()) 
+        {
+            $proto = ImageXOption::$HTTPS;
+        }
+
+        $format = $opt->getFormat();
+
+        $mainURL   = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['MainDomain'], $uri, $tpl, $format);
+        $backupURL = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['BackupDomain'], $uri, $tpl, $format);
+        return ['MainUrl' => $mainURL, 'BackupUrl' => $backupURL];
+    }
+
+    // getDomainInfo
+    private function getDomainInfo(string $serviceID, array $fallbackWeights)
+    {
+        $now = time();
+        if ($now - $this->lastDomainUpdateTime <= Imagex::$updateInterval) 
+        {
+            // 命中cache
+            $domainArray = $this->domainCache[$serviceID];
+            return $this->packDomainInfo($domainArray);
+        }   
+
+        $this->lastDomainUpdateTime = time();
+        $response = $this->request('GetCdnDomainWeights', ['query' => ['ServiceId' => $serviceID, 'ProductLine' => 'imagex']]);
+        $respJson = json_decode($response->getBody(), true);
+
+        if (array_key_exists('Error', $respJson['ResponseMetadata']) || !is_array($respJson['Result'][$serviceID])) {
+            $this->domainCache[$serviceID] = $fallbackWeights;
+        } else {
+            $this->domainCache[$serviceID] = $respJson['Result'][$serviceID];
+        }
+
+        // 更新cache的数据
+        $domainArray = $this->domainCache[$serviceID];
+        return $this->packDomainInfo($domainArray);
+    }
+
+    // packDomainInfo
+    private function packDomainInfo(array $domainArray) 
+    {
+        $mainDomain = $this->randWeights($domainArray, '');
+        $backupDomain = $this->randWeights($domainArray, $mainDomain);
+        return array('MainDomain' => $mainDomain, 'BackupDomain' => $backupDomain);
+    }
+
+    // randWeigths
+	private function randWeights(array $domainWights, string $excludeDomain)
+    {
+        $weightSum = 0;
+        foreach ($domainWights as $key => $value) {
+            if ($key == $excludeDomain) {
+                continue;
+            }
+            $weightSum += $value;
+        }
+        if ($weightSum <= 0) {
+            return '';
+        }
+        $r = rand(1, $weightSum);
+        foreach ($domainWights as $key => $value) {
+            if ($key == $excludeDomain) {
+                continue;
+            }
+            $r -= $value;
+            if ($r <= 0) {
+                return $key;
+            }
+        }
+        return '';
+    }
+
+
     protected $apiList = [
         'ApplyUploadImageFile' => [
             'url' => '/',
@@ -174,6 +256,16 @@ class ImageX extends V4Curl
                 'query' => [
                     'Action' => 'CommitUploadImageFile',
                     'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'GetCdnDomainWeights' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetCdnDomainWeights',
+                    'Version' => '2019-07-01',
                 ],
             ]
         ],
