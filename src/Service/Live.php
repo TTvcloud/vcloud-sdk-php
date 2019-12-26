@@ -132,6 +132,16 @@ class Live extends V4Curl
                 ],
             ]
         ],
+        'GetOnlineUserNum' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetOnlineUserNum',
+                    'Version' => '2019-10-01',
+                ],
+            ]
+        ],
     ];
 
     // 创建直播流
@@ -201,6 +211,18 @@ class Live extends V4Curl
         ];
 
         $response = $this->request('GetStreamTimeShiftInfo', ['query' => $query]);
+        return (string)$response->getBody();
+    }
+
+    // 获取在线人数
+    public function getOnlineUserNum($stream, $startTime, $endTime) {
+        $query = [
+            'Stream' => $stream,
+            'StartTime' => $startTime,
+            'EndTime' => $endTime,
+        ];
+
+        $response = $this->request('GetOnlineUserNum', ['query' => $query]);
         return (string)$response->getBody();
     }
 }
