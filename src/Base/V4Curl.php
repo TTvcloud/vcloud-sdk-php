@@ -118,6 +118,72 @@ abstract class V4Curl extends Singleton
         }
     }
 
+    public function signSts2(array $policy, int $expire)
+    {
+        // 获取长期的aksk信息
+        $credentials = $this->prepareCredentials([]);
+        $now = time();
+
+        $sts = [
+            "AccessKeyId" => $this->generateAccessKeyId("AKTP"),
+            "SecretAccessKey" => $this->generateSecretKey(),
+            "ExpiredTime" => date('Y-m-d\TH:i:sP', $now + $expire),
+            "CurrentTime" => date('Y-m-d\TH:i:sP', $now),
+        ];
+
+        $innerToken = $this->createInnerToken($credentials, $sts, $policy, $now + $expire);
+        $sts["SessionToken"] = "STS2" . base64_encode(json_encode($innerToken));
+
+        return $sts;
+    }
+
+    private function createInnerToken(array $credentials, array $sts, array $policy, int $expire)
+    {
+        $inner = [
+            "LTAccessKeyId" => $credentials["ak"],
+            "AccessKeyId" => $sts["AccessKeyId"],
+            "ExpiredTime" => $expire,
+        ];
+
+        $key = md5($credentials["sk"], true);
+        $inner["SignedSecretAccessKey"] = $this->aesEncrypt($sts["SecretAccessKey"], $key);
+
+        if (sizeof($policy) > 0) {
+            $inner["PolicyString"] = json_encode($policy);
+        }else {
+            $inner["PolicyString"] = "";
+        }
+
+        $signStr = sprintf("%s|%s|%d|%s|%s",
+            $inner["LTAccessKeyId"],
+            $inner["AccessKeyId"],
+            $inner["ExpiredTime"],
+            $inner["SignedSecretAccessKey"],
+            $inner["PolicyString"]);
+
+        $inner["Signature"] = hash_hmac('sha256', $signStr, $key);
+
+        return $inner;
+    }
+
+    public function newAllowStatement(array $actions, array $resources)
+    {
+        return [
+            "Effect" => "Allow",
+            "Action" => $actions,
+            "Resource" => $resources,
+        ];
+    }
+
+    public function newDenyStatement(array $actions, array $resources)
+    {
+        return [
+            "Effect" => "Deny",
+            "Action" => $actions,
+            "Resource" => $resources,
+        ];
+    }
+
     protected function configMerge($c1, $c2, $c3)
     {
         $result = $c1;
@@ -163,5 +229,27 @@ abstract class V4Curl extends Singleton
                 return $handler($request, $options);
             };
         };
+    }
+
+    protected function generateAccessKeyId($prefix)
+    {
+        // 随机128bit,转化成16进制后再base64编码
+        $accessKeyId = $prefix . base64_encode(bin2hex(random_bytes(16)));
+
+        $accessKeyId = str_replace("=", "", $accessKeyId);
+        $accessKeyId = str_replace("/", "", $accessKeyId);
+        $accessKeyId = str_replace("+", "", $accessKeyId);
+        $accessKeyId = str_replace("-", "", $accessKeyId);
+        return $accessKeyId;
+    }
+
+    protected function generateSecretKey()
+    {
+        return base64_encode(bin2hex(random_bytes(30)));
+    }
+
+    protected function aesEncrypt($src, $pwd)
+    {
+        return base64_encode(openssl_encrypt($src, "AES-128-CBC", $pwd, OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, $pwd));
     }
 }

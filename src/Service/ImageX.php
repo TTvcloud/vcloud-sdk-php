@@ -5,6 +5,9 @@ namespace Vcloud\Service;
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
 
+
+const ResourceServiceIdTRN = "trn:ImageX:*:*:ServiceId/%s";
+
 class ImageX extends V4Curl
 {
 	private static $updateInterval = 10;
@@ -71,10 +74,42 @@ class ImageX extends V4Curl
         return (string) $response->getBody();
     }
 
+    public function applyUpload(array $query)
+    {
+        $response = $this->request('ApplyImageUpload', $query);
+        return (string) $response->getBody();
+    }
+
     public function commitUploadImage(array $query)
     {
         $response = $this->request('CommitUploadImageFile', $query);
         return (string) $response->getBody();
+    }
+
+    public function commitUpload(array $query)
+    {
+        $response = $this->request('CommitImageUpload', $query);
+        return (string) $response->getBody();
+    }
+
+    public function updateImageUrls($serviceID, $urls, $action = 0)
+    {
+        if ($action < 0 || $action > 2)
+        {
+            throw new \Exception(sprintf("update action should be [0,2], %d", $action));
+        }
+
+        $config = [
+            "query" => ["ServiceId" => $serviceID],
+            "json" => [
+                "Action" => $action,
+                "ImageUrls" => $urls,
+            ],
+        ];
+
+        
+        $response = $this->request('UpdateImageUploadFiles', $config);
+        return (string)$response->getBody();
     }
 
     public function upload(string $uploadHost, $storeInfo, string $filePath)
@@ -177,6 +212,30 @@ class ImageX extends V4Curl
         return ['MainUrl' => $mainURL, 'BackupUrl' => $backupURL];
     }
 
+    // getUploadAuth 获取上传图片的sts
+    public function getUploadAuth(array $serviceIDList, int $expire = 3600)
+    {
+        $actions = ['ImageX:ApplyImageUpload', 'ImageX:CommitImageUpload'];
+        $resources = [];
+        if (sizeof($serviceIDList) == 0)
+        {
+            $resources[] = sprintf(ResourceServiceIdTRN, "*");
+        }else
+        {
+            foreach ($serviceIDList as $serviceID)
+            {
+                $resources[] = sprintf(ResourceServiceIdTRN, $serviceID);
+            }
+        }
+
+        $statement = $this->newAllowStatement($actions, $resources);
+        $policy = [
+            'Statement' => [$statement],
+        ];
+
+        return $this->signSts2($statement, $expire);
+    }
+
     // getDomainInfo
     private function getDomainInfo(string $serviceID, array $fallbackWeights)
     {
@@ -266,6 +325,36 @@ class ImageX extends V4Curl
                 'query' => [
                     'Action' => 'GetCdnDomainWeights',
                     'Version' => '2019-07-01',
+                ],
+            ]
+        ],
+        'ApplyImageUpload' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ApplyImageUpload',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'CommitImageUpload' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'CommitImageUpload',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'UpdateImageUploadFiles' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'UpdateImageUploadFiles',
+                    'Version' => '2018-08-01',
                 ],
             ]
         ],
