@@ -241,7 +241,7 @@ class ImageX extends V4Curl
             'Statement' => [$statement],
         ];
 
-        return $this->signSts2($statement, $expire);
+        return $this->signSts2($policy, $expire);
     }
 
     // getDomainInfo
