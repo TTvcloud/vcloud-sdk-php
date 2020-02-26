@@ -166,7 +166,7 @@ class ImageX extends V4Curl
             $queryStr = $queryStr . "&StoreKeys=" . urlencode($value);
         }
 
-        $response = $this->applyUploadImage(['query' => $queryStr]);
+        $response = $this->applyUpload(['query' => $queryStr]);
         $applyResponse = json_decode($response, true);
         if (isset($applyResponse["ResponseMetadata"]["Error"])) {
             return $applyResponse["ResponseMetadata"]["Error"]["Message"];
@@ -190,7 +190,7 @@ class ImageX extends V4Curl
         $commitUploadParams["ServiceId"] = $params["ServiceId"];
         $commitUploadParams["SessionKey"] = $applyResponse['Result']['SessionKey'];
 
-        $response = $this->commitUploadImage(['query' => $commitUploadParams]);
+        $response = $this->commitUpload(['query' => $commitUploadParams]);
         return (string) $response;
     }
 
