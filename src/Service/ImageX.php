@@ -212,6 +212,24 @@ class ImageX extends V4Curl
         return ['MainUrl' => $mainURL, 'BackupUrl' => $backupURL];
     }
 
+    public function getUploadAuthToken($query)
+    {
+        $token = [
+            "Version" => 'v1',
+        ];
+
+        $url = $this->getRequestUrl("ApplyImageUpload", $query);
+        $m = parse_url($url);
+        $token["ApplyUploadToken"] = $m["query"];
+
+
+        $url = $this->getRequestUrl("CommitImageUpload", $query);
+        $m = parse_url($url);
+        $token["CommitUploadToken"] = $m["query"];
+
+        return base64_encode(json_encode($token));
+    }
+
     // getUploadAuth 获取上传图片的sts
     public function getUploadAuth(array $serviceIDList, int $expire = 3600)
     {

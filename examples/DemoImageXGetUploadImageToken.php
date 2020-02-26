@@ -14,3 +14,9 @@ echo "\n上传ImageX\n";
 $serviceIDList = ["your service id"];
 $response = $xclient->getUploadAuth($serviceIDList, 3600);
 echo json_encode($response);
+
+echo "\n=======================\n";
+
+$query = ['query' => ['ServiceId' => $serviceIDList]];
+$response = $xclient->getUploadAuthToken($query);
+echo $response;
