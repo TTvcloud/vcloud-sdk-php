@@ -70,23 +70,11 @@ class ImageX extends V4Curl
 
     public function applyUploadImage(array $query)
     {
-        $response = $this->request('ApplyUploadImageFile', $query);
-        return (string) $response->getBody();
-    }
-
-    public function applyUpload(array $query)
-    {
         $response = $this->request('ApplyImageUpload', $query);
         return (string) $response->getBody();
     }
 
     public function commitUploadImage(array $query)
-    {
-        $response = $this->request('CommitUploadImageFile', $query);
-        return (string) $response->getBody();
-    }
-
-    public function commitUpload(array $query)
     {
         $response = $this->request('CommitImageUpload', $query);
         return (string) $response->getBody();
@@ -157,7 +145,7 @@ class ImageX extends V4Curl
         $applyUploadParams["UploadNum"] = $params["UploadNum"];
 
         // build query custom
-        $applyUploadParams["Action"] = "ApplyUploadImageFile";
+        $applyUploadParams["Action"] = "ApplyImageUpload";
         $applyUploadParams["Version"] = "2018-08-01";
 
         $queryStr = http_build_query($applyUploadParams);
@@ -166,31 +154,33 @@ class ImageX extends V4Curl
             $queryStr = $queryStr . "&StoreKeys=" . urlencode($value);
         }
 
-        $response = $this->applyUpload(['query' => $queryStr]);
+        $response = $this->applyUploadImage(['query' => $queryStr]);
         $applyResponse = json_decode($response, true);
         if (isset($applyResponse["ResponseMetadata"]["Error"])) {
             return $applyResponse["ResponseMetadata"]["Error"]["Message"];
         }
-        if (count($applyResponse['Result']['UploadHosts']) == 0) {
+        $uploadAddr = $applyResponse['Result']['UploadAddress'];
+        if (count($uploadAddr['UploadHosts']) == 0) {
             return "no upload host found";
         }
-        $uploadHost = $applyResponse['Result']['UploadHosts'][0];
-        if (count($applyResponse['Result']['StoreInfos']) != $params["UploadNum"]) {
+        $uploadHost = $uploadAddr['UploadHosts'][0];
+        if (count($uploadAddr['StoreInfos']) != $params["UploadNum"]) {
             return "store infos num != upload num";
         }
 
         for ($i = 0; $i < count($filePaths); ++$i) {
-            $respCode = $this->upload($uploadHost, $applyResponse['Result']['StoreInfos'][$i], $filePaths[$i]);
+            $respCode = $this->upload($uploadHost, $uploadAddr['StoreInfos'][$i], $filePaths[$i]);
             if ($respCode != 0) {
                 return "upload " . $filePaths[i] . " error";
             }
         }
 
-        $commitUploadParams = array();
-        $commitUploadParams["ServiceId"] = $params["ServiceId"];
-        $commitUploadParams["SessionKey"] = $applyResponse['Result']['SessionKey'];
+        $commitUploadParams = [
+            "query" => ["ServiceId" => $params["ServiceId"]],
+            "json" => ["SessionKey" => $uploadAddr['SessionKey']],
+        ];
 
-        $response = $this->commitUpload(['query' => $commitUploadParams]);
+        $response = $this->commitUploadImage($commitUploadParams);
         return (string) $response;
     }
 
@@ -316,26 +306,6 @@ class ImageX extends V4Curl
 
 
     protected $apiList = [
-        'ApplyUploadImageFile' => [
-            'url' => '/',
-            'method' => 'get',
-            'config' => [
-                'query' => [
-                    'Action' => 'ApplyUploadImageFile',
-                    'Version' => '2018-08-01',
-                ],
-            ]
-        ],
-        'CommitUploadImageFile' => [
-            'url' => '/',
-            'method' => 'post',
-            'config' => [
-                'query' => [
-                    'Action' => 'CommitUploadImageFile',
-                    'Version' => '2018-08-01',
-                ],
-            ]
-        ],
         'GetCdnDomainWeights' => [
             'url' => '/',
             'method' => 'get',
@@ -358,7 +328,7 @@ class ImageX extends V4Curl
         ],
         'CommitImageUpload' => [
             'url' => '/',
-            'method' => 'get',
+            'method' => 'post',
             'config' => [
                 'query' => [
                     'Action' => 'CommitImageUpload',
@@ -368,7 +338,7 @@ class ImageX extends V4Curl
         ],
         'UpdateImageUploadFiles' => [
             'url' => '/',
-            'method' => 'get',
+            'method' => 'post',
             'config' => [
                 'query' => [
                     'Action' => 'UpdateImageUploadFiles',

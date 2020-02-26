@@ -8,6 +8,6 @@ $client = ImageX::getInstance();
 $serviceID = ""; // service ID
 $urls = ["url1", "url2"];
 
-echo "\n获取imagex url\n";
+echo "\n刷新图片url\n";
 $resp = $client->updateImageUrls($serviceID, $urls);
 var_dump($resp);
