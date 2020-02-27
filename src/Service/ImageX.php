@@ -5,6 +5,9 @@ namespace Vcloud\Service;
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
 
+
+const ResourceServiceIdTRN = "trn:ImageX:*:*:ServiceId/%s";
+
 class ImageX extends V4Curl
 {
 	private static $updateInterval = 10;
@@ -67,14 +70,34 @@ class ImageX extends V4Curl
 
     public function applyUploadImage(array $query)
     {
-        $response = $this->request('ApplyUploadImageFile', $query);
+        $response = $this->request('ApplyImageUpload', $query);
         return (string) $response->getBody();
     }
 
     public function commitUploadImage(array $query)
     {
-        $response = $this->request('CommitUploadImageFile', $query);
+        $response = $this->request('CommitImageUpload', $query);
         return (string) $response->getBody();
+    }
+
+    public function updateImageUrls($serviceID, $urls, $action = 0)
+    {
+        if ($action < 0 || $action > 2)
+        {
+            throw new \Exception(sprintf("update action should be [0,2], %d", $action));
+        }
+
+        $config = [
+            "query" => ["ServiceId" => $serviceID],
+            "json" => [
+                "Action" => $action,
+                "ImageUrls" => $urls,
+            ],
+        ];
+
+        
+        $response = $this->request('UpdateImageUploadFiles', $config);
+        return (string)$response->getBody();
     }
 
     public function upload(string $uploadHost, $storeInfo, string $filePath)
@@ -122,7 +145,7 @@ class ImageX extends V4Curl
         $applyUploadParams["UploadNum"] = $params["UploadNum"];
 
         // build query custom
-        $applyUploadParams["Action"] = "ApplyUploadImageFile";
+        $applyUploadParams["Action"] = "ApplyImageUpload";
         $applyUploadParams["Version"] = "2018-08-01";
 
         $queryStr = http_build_query($applyUploadParams);
@@ -136,26 +159,28 @@ class ImageX extends V4Curl
         if (isset($applyResponse["ResponseMetadata"]["Error"])) {
             return $applyResponse["ResponseMetadata"]["Error"]["Message"];
         }
-        if (count($applyResponse['Result']['UploadHosts']) == 0) {
+        $uploadAddr = $applyResponse['Result']['UploadAddress'];
+        if (count($uploadAddr['UploadHosts']) == 0) {
             return "no upload host found";
         }
-        $uploadHost = $applyResponse['Result']['UploadHosts'][0];
-        if (count($applyResponse['Result']['StoreInfos']) != $params["UploadNum"]) {
+        $uploadHost = $uploadAddr['UploadHosts'][0];
+        if (count($uploadAddr['StoreInfos']) != $params["UploadNum"]) {
             return "store infos num != upload num";
         }
 
         for ($i = 0; $i < count($filePaths); ++$i) {
-            $respCode = $this->upload($uploadHost, $applyResponse['Result']['StoreInfos'][$i], $filePaths[$i]);
+            $respCode = $this->upload($uploadHost, $uploadAddr['StoreInfos'][$i], $filePaths[$i]);
             if ($respCode != 0) {
                 return "upload " . $filePaths[i] . " error";
             }
         }
 
-        $commitUploadParams = array();
-        $commitUploadParams["ServiceId"] = $params["ServiceId"];
-        $commitUploadParams["SessionKey"] = $applyResponse['Result']['SessionKey'];
+        $commitUploadParams = [
+            "query" => ["ServiceId" => $params["ServiceId"]],
+            "json" => ["SessionKey" => $uploadAddr['SessionKey']],
+        ];
 
-        $response = $this->commitUploadImage(['query' => $commitUploadParams]);
+        $response = $this->commitUploadImage($commitUploadParams);
         return (string) $response;
     }
 
@@ -175,6 +200,48 @@ class ImageX extends V4Curl
         $mainURL   = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['MainDomain'], $uri, $tpl, $format);
         $backupURL = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['BackupDomain'], $uri, $tpl, $format);
         return ['MainUrl' => $mainURL, 'BackupUrl' => $backupURL];
+    }
+
+    public function getUploadAuthToken($query)
+    {
+        $token = [
+            "Version" => 'v1',
+        ];
+
+        $url = $this->getRequestUrl("ApplyImageUpload", $query);
+        $m = parse_url($url);
+        $token["ApplyUploadToken"] = $m["query"];
+
+
+        $url = $this->getRequestUrl("CommitImageUpload", $query);
+        $m = parse_url($url);
+        $token["CommitUploadToken"] = $m["query"];
+
+        return base64_encode(json_encode($token));
+    }
+
+    // getUploadAuth 获取上传图片的sts
+    public function getUploadAuth(array $serviceIDList, int $expire = 3600)
+    {
+        $actions = ['ImageX:ApplyImageUpload', 'ImageX:CommitImageUpload'];
+        $resources = [];
+        if (sizeof($serviceIDList) == 0)
+        {
+            $resources[] = sprintf(ResourceServiceIdTRN, "*");
+        }else
+        {
+            foreach ($serviceIDList as $serviceID)
+            {
+                $resources[] = sprintf(ResourceServiceIdTRN, $serviceID);
+            }
+        }
+
+        $statement = $this->newAllowStatement($actions, $resources);
+        $policy = [
+            'Statement' => [$statement],
+        ];
+
+        return $this->signSts2($policy, $expire);
     }
 
     // getDomainInfo
@@ -239,26 +306,6 @@ class ImageX extends V4Curl
 
 
     protected $apiList = [
-        'ApplyUploadImageFile' => [
-            'url' => '/',
-            'method' => 'get',
-            'config' => [
-                'query' => [
-                    'Action' => 'ApplyUploadImageFile',
-                    'Version' => '2018-08-01',
-                ],
-            ]
-        ],
-        'CommitUploadImageFile' => [
-            'url' => '/',
-            'method' => 'post',
-            'config' => [
-                'query' => [
-                    'Action' => 'CommitUploadImageFile',
-                    'Version' => '2018-08-01',
-                ],
-            ]
-        ],
         'GetCdnDomainWeights' => [
             'url' => '/',
             'method' => 'get',
@@ -266,6 +313,36 @@ class ImageX extends V4Curl
                 'query' => [
                     'Action' => 'GetCdnDomainWeights',
                     'Version' => '2019-07-01',
+                ],
+            ]
+        ],
+        'ApplyImageUpload' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ApplyImageUpload',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'CommitImageUpload' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'CommitImageUpload',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'UpdateImageUploadFiles' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'UpdateImageUploadFiles',
+                    'Version' => '2018-08-01',
                 ],
             ]
         ],

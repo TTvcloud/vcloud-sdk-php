@@ -8,9 +8,9 @@ namespace Vcloud\Base;
 class Singleton
 {
     private static $instances = array();
-    protected function __construct()
+    public function __construct()
     { }
-    protected function __clone()
+    public function __clone()
     { }
     public function __wakeup()
     {
