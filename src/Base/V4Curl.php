@@ -42,6 +42,16 @@ abstract class V4Curl extends Singleton
         }
     }
 
+    public function setHost($host)
+    {
+        if ($host != "") {
+            $this->client = new Client([
+                'handler' => $this->stack,
+                'base_uri' => $host,
+            ]);
+        }
+    }
+
     public function setSecretKey($sk)
     {
         if ($sk != "") {
