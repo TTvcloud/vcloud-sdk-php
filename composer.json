@@ -9,13 +9,15 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "guzzlehttp/guzzle":"~6.2"
+        "php": ">=7.1",
+        "guzzlehttp/guzzle":"~6.2",
+        "garoevans/php-enum": "^1.2",
     },
     "autoload": {
         "psr-4": {
             "Vcloud\\": "src/",
             "Test\\": "tests/"
         }
-    }
+    },
+    "description": ""
 }
