@@ -1,7 +1,7 @@
 <?php
 
 namespace Vcloud\Service;
-require('Live/LiveParams.php');
+require('Live/DataStruct.php');
 
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
