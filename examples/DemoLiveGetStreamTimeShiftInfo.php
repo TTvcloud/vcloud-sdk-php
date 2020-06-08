@@ -5,9 +5,9 @@ use Vcloud\Service\Live;
 $client = Live::getInstance('cn-north-1');
 
 echo "\nDemo 1\n";
-$stream = '';
-$startTime = 0;
-$endTime = 0;
+$stream = 'stream-106753095100792963';
+$startTime = 1;
+$endTime = 2;
 $response = $client->getStreamTimeShiftInfo($stream, $startTime, $endTime);
-echo $response;
+echo print_r($response);
 

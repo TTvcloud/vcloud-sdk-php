@@ -5,9 +5,9 @@ use Vcloud\Service\Live;
 $client = Live::getInstance('cn-north-1');
 
 echo "\nDemo 1\n";
-$stream = ''; // 流信息
-$startTime = 1; // 正确的时间戳
-$endTime = 2; // 正确的时间戳
+$stream = 'stream-106753608883634307'; // 流信息
+$startTime = 1590754217-360; // 正确的时间戳
+$endTime = 1590754217; // 正确的时间戳
 $response = $client->getOnlineUserNum($stream, $startTime, $endTime);
-echo $response;
+echo print_r($response);
 

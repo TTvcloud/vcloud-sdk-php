@@ -5,6 +5,5 @@ use Vcloud\Service\Live;
 $client = Live::getInstance('cn-north-1');
 
 echo "\nDemo 1\n";
-$response = $client->getVODs('stream-105807150228176907');
-echo $response;
-
+$response = $client->getVODs('stream-106753095100792963');
+echo print_r($response);

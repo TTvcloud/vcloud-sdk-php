@@ -9,13 +9,16 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "guzzlehttp/guzzle":"~6.2"
+        "php": ">=7.1",
+        "guzzlehttp/guzzle":"~6.2",
+        "ext-json": "*",
+        "ext-posix": "*"
     },
     "autoload": {
         "psr-4": {
             "Vcloud\\": "src/",
             "Test\\": "tests/"
         }
-    }
+    },
+    "description": ""
 }
