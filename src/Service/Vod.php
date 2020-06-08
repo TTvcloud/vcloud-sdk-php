@@ -5,6 +5,14 @@ namespace Vcloud\Service;
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
 
+const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
+const ResourceVideoFormat = "trn:vod::*:video_id/%s";
+const ResourceStreamTypeFormat = "trn:vod:::stream_type/%s";
+const ResourceWatermarkFormat = "trn:vod::*:watermark/%s";
+const ActionGetPlayInfo = "vod:GetPlayInfo";
+const Star = "*";
+const Statement = "Statement";
+
 class Vod extends V4Curl
 {
     private static $UPDATE_INTERVAL = 10;
@@ -92,13 +100,13 @@ class Vod extends V4Curl
     public function getPlayInfo(array $query)
     {
         $response = $this->request('GetPlayInfo', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function getOriginVideoPlayInfo(array $query)
     {
         $response = $this->request('GetOriginVideoPlayInfo', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function getRedirectPlay(array $query)
@@ -137,13 +145,13 @@ class Vod extends V4Curl
     public function applyUpload(array $query)
     {
         $response = $this->request('ApplyUpload', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function commitUpload(array $query)
     {
         $response = $this->request('CommitUpload', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function uploadFile(string $uploadHost, $storeInfo, string $filePath)
@@ -161,7 +169,7 @@ class Vod extends V4Curl
         ]);
 
         $response = $tosClient->request('PUT', $storeInfo["StoreUri"], ["body" => $body, "headers" => ['Authorization' => $storeInfo["Auth"], 'Content-CRC32' => $crc32]]);
-        $uploadResponse = json_decode((string) $response->getBody(), true);
+        $uploadResponse = json_decode((string)$response->getBody(), true);
         if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
             return -2;
         }
@@ -200,7 +208,7 @@ class Vod extends V4Curl
             return $resp[1];
         }
         $response = $this->commitUpload(['query' => ['SpaceName' => $spaceName], 'json' => ['SessionKey' => $resp[2], 'Functions' => $functions]]);
-        return (string) $response;
+        return (string)$response;
     }
 
     public function uploadPoster(string $vid, string $spaceName, string $filePath)
@@ -210,31 +218,31 @@ class Vod extends V4Curl
             return $resp[1];
         }
         $response = $this->modifyVideoInfo(['query' => [], 'json' => ['SpaceName' => $spaceName, 'Vid' => $vid, 'Info' => ['PosterUri' => $resp[3]]]]);
-        return (string) $response;
+        return (string)$response;
     }
 
     public function uploadMediaByUrl(array $query)
     {
         $response = $this->request('UploadMediaByUrl', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function modifyVideoInfo(array $query)
     {
         $response = $this->request('ModifyVideoInfo', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function startTranscode(array $query)
     {
         $response = $this->request('StartTranscode', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function setVideoPublishStatus(array $query)
     {
         $response = $this->request('SetVideoPublishStatus', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     private function getDomainInfo(string $space, array $fallbackWeights)
@@ -290,6 +298,36 @@ class Vod extends V4Curl
         $mainUrl = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['MainDomain'], $uri, $tpl, $format);
         $backupUrl = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['BackupDomain'], $uri, $tpl, $format);
         return array('MainUrl' => $mainUrl, 'BackupUrl' => $backupUrl);
+    }
+
+    public function getVideoPlayAuthWithExpiredTime(array $vidList, array $streamTypeList, array $watermarkList, int $expire)
+    {
+        $actions = [ActionGetPlayInfo];
+        $resources = [];
+        $this->addSts2Resources($vidList, ResourceVideoFormat, $resources);
+        $this->addSts2Resources($streamTypeList, ResourceStreamTypeFormat, $resources);
+        $this->addSts2Resources($watermarkList, ResourceWatermarkFormat, $resources);
+        $statement = $this->newAllowStatement($actions, $resources);
+        $policy = [
+            Statement => [$statement],
+        ];
+        return $this->signSts2($policy, $expire);
+    }
+
+    public function getVideoPlayAuth(array $vidList, array $streamTypeList, array $watermarkList)
+    {
+        return $this->getVideoPlayAuthWithExpiredTime($vidList, $streamTypeList, $watermarkList, 60 * 60);
+    }
+
+    private function addSts2Resources(array $list, string $resourceFormat, array &$resources)
+    {
+        if (sizeof($list) == 0) {
+            $resources[] = sprintf($resourceFormat, Star);
+        } else {
+            foreach ($list as $value) {
+                $resources[] = sprintf($resourceFormat, $value);
+            }
+        }
     }
 
     private function randWeights(array $domainWights, string $excludeDomain)

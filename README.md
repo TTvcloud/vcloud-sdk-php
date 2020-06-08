@@ -75,6 +75,68 @@ PS: 上述两个接口和 [getRedirectPlay](https://open.bytedance.com/docs/4/92
 。
 
 
+#### STS2鉴权
+
+点播提供的 API ( default )
+
+getVideoPlayAuth(array $vidList, array $streamTypeList, array $watermarkList)
+
+vidList、streamTypeList、watermarkList 为3种资源，分别代表视频vid、stream type和水印三种资源，数组为空是代表允许访问所有资源。
+
+默认的 action 为 vod::GetPlayInfo（不需手动设置）
+
+默认过期时间为1小时，可以通过如下 API 自定义过期时间
+
+getVideoPlayAuthWithExpiredTime(array $vidList, array $streamTypeList, array $watermarkList, int $expire)
+
+示例代码：
+
+```
+$client = Vod::getInstance();
+// call below method if you dont set ak and sk in ～/.vcloud/config
+// $client->setAccessKey($ak);
+// $client->setSecretKey($sk);
+
+$expire = 60; // 请求的签名有效期
+
+echo "\nSTS2鉴权签名\n";
+$space = "";
+$response = $client->getVideoPlayAuthWithExpiredTime([], [], [], $expire);
+echo json_encode($response);
+
+echo "\nSTS2鉴权签名，过期时间默认1小时\n";
+$vid = "";
+$response = $client->getVideoPlayAuth([], [], []);
+echo json_encode($response);
+```
+
+自定义 STS2 授权模式
+
+```
+// 第1步 创建 actions 和 resources
+$actions = ['service:Method']; // eg: vod:GetPlayInfo
+$resources = [];
+// 其中每个 resource 格式类似 "trn:vod::*:video_id/%s"，若允许全部则用 * 替代，否则用实际字符串替代，本例可以填写实际的 vid
+if (sizeof($vidList) == 0) {
+    $resources[] = sprintf($ResourceVideoFormat, "*");
+} else {
+    foreach ($vidList as $vid) {
+        $resources[] = sprintf($ResourceVideoFormat, $vid);
+    }
+}
+
+// 第2步 创建 Statement,允许的 NewAllowStatement, 拒绝的 NewDenyStatement，并添加到 Policy 对应的 Statement 数组里，并创建 Policy
+$statement = $this->newAllowStatement($actions, $resources);
+$policy = [
+    'Statement' => [$statement],
+];
+
+// 第3步 调用 signSts2 生成签名
+$this->signSts2($policy, $expire);
+
+```
+
+
 #### 更多示例参见
 example
 
