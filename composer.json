@@ -11,7 +11,8 @@
     "require": {
         "php": ">=7.1",
         "guzzlehttp/guzzle":"~6.2",
-        "garoevans/php-enum": "^1.2",
+        "ext-json": "*",
+        "ext-posix": "*"
     },
     "autoload": {
         "psr-4": {

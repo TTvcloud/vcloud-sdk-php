@@ -1,16 +1,36 @@
 <?php
 
 namespace Vcloud\Service;
-require('Live/DataStruct.php');
 
+use GuzzleHttp\HandlerStack;
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
-use Vcloud\Service\Live\PlayInfo;
-use Vcloud\Service\Live\PushInfo;
-use Vcloud\Service\Live\ResponseMetadata;
+use Vcloud\Service\Live\AllAppInfoCache;
+use Vcloud\Service\Live\FallbackPlayInfo;
 
+const logPrefix = "[vcloud-live]";
 class Live extends V4Curl
 {
+    protected $fallbackPlayInfo;
+    public $allAppInfoCache;
+
+    public function __construct()
+    {
+        $this->region = func_get_arg(0);
+        $this->stack = HandlerStack::create();
+        $this->stack->push($this->replaceUri());
+        $this->stack->push($this->v4Sign());
+
+        $config = $this->getConfig($this->region);
+        $this->client = new Client([
+            'handler' => $this->stack,
+            'base_uri' => $config['host'],
+        ]);
+
+        $this->allAppInfoCache = new AllAppInfoCache($this);
+        $this->fallbackPlayInfo = new FallbackPlayInfo($this->allAppInfoCache);
+    }
+
     protected function getConfig(string $region)
     {
         switch ($region) {
@@ -155,8 +175,26 @@ class Live extends V4Curl
                     'Version' => '2019-10-01',
                 ],
             ]
+        ],
+        'GetDesensitizedAllAppInfos' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetDesensitizedAllAppInfos',
+                    'Version' => '2019-10-01',
+                ],
+            ]
         ]
     ];
+
+    public function request($api, array $config = [])
+    {
+        if($this->allAppInfoCache->isEmptyCache() && $api != "GetDesensitizedAllAppInfos"){
+            $this->allAppInfoCache->updateAllAppInfosCache();
+        }
+        return parent::request($api, $config);
+    }
 
     // 创建直播流
     public function createStream($appID, $stream = '', $delayTime = 0, $extra = '') {
@@ -168,38 +206,21 @@ class Live extends V4Curl
         ];
 
         $response = $this->request('CreateStream', ['json' => $json]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return (object)[
-            "result" => (object)[
-                "appID" => (int)$respArr["Result"]["AppID"],
-                "stream" => (string)$respArr["Result"]["Stream"],
-                "createTime" => (int)$respArr["Result"]["CreateTime"],
-            ],
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
     }
 
     // 获取推流信息
-    public function getStreamsPushInfo(array $streams, $expireDuration = 60) {
+    public function getStreamsPushInfo(array $streams) {
         $json = [
-            'Streams' => $streams,
-            'ExpireDuration' => $expireDuration
+            'Streams' => $streams
         ];
 
         $response = $this->request('MGetStreamsPushInfo', ['json' => $json]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return (object)[
-            "result" => array_map(function($value) {
-                return new PushInfo($value);
-            }, $respArr["Result"]["PushInfos"]),
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+       return json_decode((string)$response->getBody(),true);
     }
 
     // 获取播放地址
-    public function getStreamsPlayInfo(array $streams) {
+    public function getStreamsPlayInfo(array $streams, $enableSSL=false) {
         $json = [
             'Streams' => $streams,
         ];
@@ -207,12 +228,21 @@ class Live extends V4Curl
         $response = $this->request('MGetStreamsPlayInfo', ['json' => $json]);
         $respArr = json_decode((string)$response->getBody(),true);
 
-        return [
-            "result" => array_map(function($value) {
-                return new PlayInfo($value);
-            }, $respArr["Result"]["PlayInfos"]),
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        if (isset($respArr["ResponseMetadata"]["Error"])){
+            $playInfos = $this->fallbackPlayInfo->getStreamsFallbackPlayInfo($streams,$enableSSL);
+
+            if (isset($playInfos["error"])){
+                error_log(logPrefix.'mget stream fall back play info failed, err='.$playInfos["error"]);
+            }else {
+                $respArr["ResponseMetadata"]["Error"] = null;
+                return [
+                    "Result" => ["PlayInfos" => $playInfos],
+                    "ResponseMetadata" => $respArr["ResponseMetadata"]
+                ];
+            }
+        }
+
+        return $respArr;
     }
 
     // 获取点播信息
@@ -220,20 +250,7 @@ class Live extends V4Curl
         $query = ['Stream' => $stream];
 
         $response = $this->request('GetVODs', ['query' => $query]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return [
-            "result" => array_map(function($value) {
-                    return (object)[
-                        "sourceURL" => (string)$value["SourceURL"],
-                        "vid" => (string)$value["VID"],
-                        "duration" => (float)$value["Duration"],
-                        "startTime" => (int)$value["StartTime"],
-                        "endTime" => (int)$value["EndTime"]
-                    ];
-                }, $respArr["Result"]["VODs"]),
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
     }
 
     // 获取录像信息
@@ -241,20 +258,7 @@ class Live extends V4Curl
         $query = ['Stream' => $stream];
 
         $response = $this->request('GetRecords', ['query' => $query]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return [
-            "result" => array_map(function($value) {
-                return (object)[
-                    "url" => (string)$value["URL"],
-                    "type" => (string)$value["Type"],
-                    "duration" => (float)$value["Duration"],
-                    "startTime" => (int)$value["StartTime"],
-                    "endTime" => (int)$value["EndTime"],
-                ];
-            }, $respArr["Result"]["Records"]),
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
     }
 
     // 获取截图信息
@@ -262,17 +266,7 @@ class Live extends V4Curl
         $query = ['Stream' => $stream];
 
         $response = $this->request('GetSnapshots', ['query' => $query]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return (object)[
-            "result" => array_map(function($value) {
-                return (object)[
-                    "url" => (string)$value["URL"],
-                    "timestamp" => (int)$value["Timestamp"],
-                ];
-            }, $respArr["Result"]["Snapshots"]),
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
     }
 
     // 获取时移信息
@@ -284,17 +278,7 @@ class Live extends V4Curl
         ];
 
         $response = $this->request('GetStreamTimeShiftInfo', ['query' => $query]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return (object)[
-            "result" => (object)[
-                "url" => (string)$respArr["Result"]["URL"],
-                "startTime" => (int)$respArr["Result"]["StartTime"],
-                "endTime" => (int)$respArr["Result"]["EndTime"],
-                "vCodec" => (string)$respArr["Result"]["VCodec"],
-            ],
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
     }
 
     // 获取在线人数
@@ -306,31 +290,23 @@ class Live extends V4Curl
         ];
 
         $response = $this->request('GetOnlineUserNum', ['query' => $query]);
-        $respArr = json_decode((string)$response->getBody(),true);
-
-        return (object)[
-            "result" => array_map(function($value) {
-                return (object)[
-                    "num" => (int)$value["Num"],
-                    "timestamp" => (int)$value["Timestamp"],
-                ];
-            }, $respArr["Result"]["OnlineUserNum"]),
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
     }
 
     // 禁播单路流
-    public function forbidStream($appID, $stream, $forbidInterval=0) {
+    public function forbidStream($stream, $forbidInterval=0) {
         $json = [
-            'AppID' => $appID,
             'Stream' => $stream,
             'ForbidInterval' => $forbidInterval,
         ];
 
         $response = $this->request('ForbidStream', ['json' => $json]);
-        $respArr = json_decode((string)$response->getBody(),true);
-        return (object)[
-            "responseMetadata" => new ResponseMetadata($respArr["ResponseMetadata"])
-        ];
+        return json_decode((string)$response->getBody(),true);
+    }
+
+    // 获取脱敏元信息
+    public function getDesensitizedAllAppInfos() {
+        $response = $this->request('GetDesensitizedAllAppInfos');
+        return json_decode((string)$response->getBody(),true);
     }
 }
