@@ -23,6 +23,12 @@ class Edit extends V4Curl
         ];
     }
 
+    public function submitTemplateTaskAsync(array $query = [])
+    {
+        $response = $this->request('SubmitTemplateTaskAsync', $query);
+        return $response->getBody();
+    }
+
     public function submitDirectEditTaskAsync(array $query = [])
     {
         $response = $this->request('SubmitDirectEditTaskAsync', $query);
@@ -42,6 +48,16 @@ class Edit extends V4Curl
     }
 
     protected $apiList = [
+        'SubmitTemplateTaskAsync' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'SubmitTemplateTaskAsync',
+                    'Version' => '2018-01-01',
+                ],
+            ],
+        ],
         'SubmitDirectEditTaskAsync' => [
             'url' => '/',
             'method' => 'post',
