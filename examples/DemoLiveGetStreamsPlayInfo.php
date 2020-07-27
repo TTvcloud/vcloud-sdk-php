@@ -5,6 +5,6 @@ use Vcloud\Service\Live;
 $client = Live::getInstance('cn-north-1');
 
 echo "\nDemo 1\n";
-$stream = 'stream-1106753608883634317';
-$response = $client->getStreamsPlayInfo([$stream]);
+$stream = 'stream-107094090941989005';
+$response = $client->getStreamsPlayInfo([$stream],true,['DeviceId' => '20200723'],true);
 echo print_r($response);
