@@ -231,7 +231,6 @@ class Live extends V4Curl
 
         $response = $this->request('MGetStreamsPlayInfo', ['json' => $json]);
         $respArr = json_decode((string)$response->getBody(),true);
-        $respArr["ResponseMetadata"]["Error"] = [];
         if (isset($respArr["ResponseMetadata"]["Error"])){
             $playInfos = $this->fallbackPlayInfo->getStreamsFallbackPlayInfo($streams, $enableSSL, $clientInfo, $enableStreamData);
 
