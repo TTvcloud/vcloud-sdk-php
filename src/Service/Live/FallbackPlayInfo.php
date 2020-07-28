@@ -1,6 +1,16 @@
 <?php
 namespace Vcloud\Service\Live;
+
 require "Cdn/CDNInterface.php";
+
+const allowedSize2Priority = [
+    "ao" => 10,
+    "ld" => 20,
+    "sd" => 30,
+    "hd" => 40,
+    "uhd" => 50,
+    "origin" => 60
+];
 
 class FallbackPlayInfo{
     protected const tsBits = 32;
@@ -16,7 +26,7 @@ class FallbackPlayInfo{
     protected $allAppInfoCache;
     protected $cdnHandler;
 
-    public function __construct($allAppInfoCache)
+    public function __construct(&$allAppInfoCache)
     {
         $this->cdnHandler = Cdn\initHandler();
         $this->allAppInfoCache = $allAppInfoCache;
@@ -24,7 +34,7 @@ class FallbackPlayInfo{
         self::$tsMask = pow(2, self::tsBits) - 1;
     }
 
-    public function getStreamsFallbackPlayInfo(array $streams, $enableSSL=false){
+    public function getStreamsFallbackPlayInfo(array $streams, $enableSSL=false, array $clientInfo=[], $enableStreamData = false){
         if(count($streams) == 0){
             return ["error" => "empty req streams"];
         }
@@ -45,7 +55,71 @@ class FallbackPlayInfo{
         }
 
         $playContext["scheduleResult"] = $scheduleResult;
-        return $this->deserializePlayInfos($playContext);
+        $playInfos = $this->deserializePlayInfos($playContext);
+        if ($enableStreamData){
+            $this->fillPullData($playInfos);
+        }
+        return $playInfos;
+    }
+
+    protected function fillPullData(array &$playInfos){
+        foreach ($playInfos as $stream => $playInfo){
+            $pullData = [];
+            $this->_fillData($pullData, $playInfo["Main"]);
+
+            $jsonPullData = json_encode(["Data" => $pullData],JSON_UNESCAPED_SLASHES);
+            if (!$jsonPullData){
+                error_log("pullData json encode failed");
+                return;
+            }
+            $playInfos[$stream]["StreamData"] = $jsonPullData;
+            $playInfos[$stream]["StreamSizes"] = $this->_fillSizes($pullData);
+        }
+    }
+
+    protected function _fillSizes(array $data){
+        $sizes = [];
+        foreach ($data as $size => $_){
+            if(allowedSize2Priority[$size] == null){
+                continue ;
+            }
+            array_push($sizes, $size);
+        }
+        usort($sizes, "Vcloud\Service\Live\_sortSizes");
+        return $sizes;
+    }
+
+    protected function _fillData(array &$data, array $eleInfos){
+        if (count($eleInfos) == 0 || $eleInfos == null){
+            return ;
+        }
+
+        foreach ($eleInfos as $eleInfo){
+            if(@allowedSize2Priority[$eleInfo["Size"]] == null){
+                continue;
+            }
+
+            $pullURLs = @$data[$eleInfo["Size"]];
+            if ($pullURLs == null){
+                $pullURLs = [];
+                $data[$eleInfo["Size"]] = $pullURLs;
+            }
+
+            $urlData = $this->_deserializeURLData($eleInfo);
+            $pullURLs["Main"] = $urlData;
+
+            $data[$eleInfo["Size"]] = $pullURLs;
+        }
+    }
+
+    protected function _deserializeURLData(array $eleInfo){
+        return [
+            "Flv" => $eleInfo["Url"]["FlvUrl"],
+            "Hls" => $eleInfo["Url"]["HlsUrl"],
+            "Cmaf" => $eleInfo["Url"]["CmafUrl"],
+            "Dash" => $eleInfo["Url"]["DashUrl"],
+            "SDKParams" => "{}",
+        ];
     }
 
     /**
@@ -146,10 +220,10 @@ class FallbackPlayInfo{
         ];
     }
 
-    protected function _addOriginToTemplates(array $origin){
+    protected function _addOriginToTemplates(array &$origin){
         $origin[] = [
-            "name" => "origin",
-            "size" => "origin"
+            "Name" => "origin",
+            "Size" => "origin"
         ];
         return $origin;
     }
@@ -212,7 +286,7 @@ class FallbackPlayInfo{
         $playInfoMap = [];
 
         foreach($scheduleResult["templates"] as $template){
-            $templateName = $template["name"];
+            $templateName = $template["Name"];
             if(!isset($resolutions[$templateName])){
                 continue;
             }
@@ -221,12 +295,11 @@ class FallbackPlayInfo{
                 "enableSSL" => $params["enableSSL"],
                 "size" => $templateName,
                 "playTypes" => $playTypes,
-                "steamInfo" => $streamInfo,
+                "streamInfo" => $streamInfo,
                 "playCdnApp" => $scheduleResult["playCdnApp"],
                 "cdn" => $scheduleResult["cdn"],
                 "templateInfo" => $template
             ];
-
             $playURL = $this->_genElePlayURL($genParams);
             if(isset($playURL["error"])){
                 error_log("gen ele play url for template:$templateName, error=".$playURL["error"]);
@@ -245,15 +318,21 @@ class FallbackPlayInfo{
     }
 
     function _genElePlayURL(array $params){
-        $playUrl = [];
+        $playUrl = [
+            "HlsUrl" => "",
+            "RtmpUrl" => "",
+            "FlvUrl" => "",
+            "CmafUrl" => "",
+            "DashUrl" => ""
+        ];
         $app = $params["playCdnApp"]["PlayApp"];
         $stream = $params["streamInfo"]["liveId"];
         $suffix = $params["templateInfo"]["Suffix"];
         $enableSSL = $params["enableSSL"];
 
-        $cdnInterface = $this->cdnHandler[$params["Cdn"]["Name"]];
+        $cdnInterface = $this->cdnHandler[$params["cdn"]["Name"]];
         if (!$cdnInterface){
-            return ["error" => "unsupported cdn:".$params["Cdn"]["Name"]];
+            return ["error" => "unsupported cdn:".$params["cdn"]["Name"]];
         }
 
         foreach ($params["playTypes"] as $playType) {
@@ -310,7 +389,7 @@ class FallbackPlayInfo{
         if ($enableSSL && $parsedUrl["scheme"] == "http"){
             $parsedUrl["scheme"] = "https";
         }
-        return sprintf('%s://%s/%s', $parsedUrl["scheme"], $parsedUrl["host"], $parsedUrl["path"]);
+        return sprintf('%s://%s%s', $parsedUrl["scheme"], $parsedUrl["host"], $parsedUrl["path"]);
     }
 
     /**
@@ -408,4 +487,17 @@ class FallbackPlayInfo{
             "pushID" => $pushID
         ];
     }
+}
+
+function _sortSizes($a, $b){
+    return (allowedSize2Priority[$a] < allowedSize2Priority[$b])?-1:1;
+}
+
+function split($str, $sep){
+    $str = trim($str, ' ');
+    if ($str == ''){
+        return [];
+    }
+
+    return explode($sep, $str);
 }

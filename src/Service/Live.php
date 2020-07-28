@@ -197,12 +197,13 @@ class Live extends V4Curl
     }
 
     // 创建直播流
-    public function createStream($appID, $stream = '', $delayTime = 0, $extra = '') {
+    public function createStream($appID, $stream = '', $delayTime = 0, $extra = '', array $clientInfo=null) {
         $json = [
             'AppID' => $appID,
             'Stream' => $stream,
             'DelayTime' => $delayTime,
-            'Extra' => $extra
+            'Extra' => $extra,
+            'ClientInfo' => $clientInfo
         ];
 
         $response = $this->request('CreateStream', ['json' => $json]);
@@ -220,16 +221,18 @@ class Live extends V4Curl
     }
 
     // 获取播放地址
-    public function getStreamsPlayInfo(array $streams, $enableSSL=false) {
+    public function getStreamsPlayInfo(array $streams, $enableSSL=false, array $clientInfo=null, $enableStreamData = false) {
         $json = [
             'Streams' => $streams,
+            'EnableSSL' => $enableSSL,
+            'ClientInfo' => $clientInfo,
+            'EnableStreamData' => $enableStreamData
         ];
 
         $response = $this->request('MGetStreamsPlayInfo', ['json' => $json]);
         $respArr = json_decode((string)$response->getBody(),true);
-
         if (isset($respArr["ResponseMetadata"]["Error"])){
-            $playInfos = $this->fallbackPlayInfo->getStreamsFallbackPlayInfo($streams,$enableSSL);
+            $playInfos = $this->fallbackPlayInfo->getStreamsFallbackPlayInfo($streams, $enableSSL, $clientInfo, $enableStreamData);
 
             if (isset($playInfos["error"])){
                 error_log(logPrefix.'mget stream fall back play info failed, err='.$playInfos["error"]);

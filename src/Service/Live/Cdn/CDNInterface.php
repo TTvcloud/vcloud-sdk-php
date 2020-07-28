@@ -15,7 +15,7 @@ interface CDNInterface {
     public function genPullDashUrl($domain, $appName, $stream, $suffix);
 }
 
-function registerCdnInstance(array $mapCdn, $cdnName, $ci){
+function registerCdnInstance(array &$mapCdn, $cdnName, $ci){
     if(!$cdnName || !$ci){
         error_log("[vcloud-live]register key[$cdnName] failed! Input nil param");
         return ;
