@@ -139,7 +139,7 @@ class Vod extends V4Curl
         $url = $this->getRequestUrl("CommitUpload", $config);
         $m = parse_url($url);
 
-        $token["CommitUpload"] = $m["query"];
+        $token["CommitUploadToken"] = $m["query"];
     }
 
     public function applyUpload(array $query)
