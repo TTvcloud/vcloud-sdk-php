@@ -10,7 +10,7 @@ const ResourceServiceIdTRN = "trn:ImageX:*:*:ServiceId/%s";
 
 class ImageX extends V4Curl
 {
-	private static $updateInterval = 10;
+    private static $updateInterval = 10;
     private $lastDomainUpdateTime = 0;
     private $domainCache = [];
 
@@ -116,19 +116,18 @@ class ImageX extends V4Curl
     public function applyUploadImage(array $query)
     {
         $response = $this->request('ApplyImageUpload', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function commitUploadImage(array $query)
     {
         $response = $this->request('CommitImageUpload', $query);
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     public function updateImageUrls($serviceID, $urls, $action = 0)
     {
-        if ($action < 0 || $action > 2)
-        {
+        if ($action < 0 || $action > 2) {
             throw new \Exception(sprintf("update action should be [0,2], %d", $action));
         }
 
@@ -140,7 +139,7 @@ class ImageX extends V4Curl
             ],
         ];
 
-        
+
         $response = $this->request('UpdateImageUploadFiles', $config);
         return (string)$response->getBody();
     }
@@ -154,13 +153,25 @@ class ImageX extends V4Curl
         $crc32 = dechex(crc32($content));
 
         $body = fopen($filePath, "r");
-        $tosClient = new Client([
-            'base_uri' => "http://" . $uploadHost,
-            'timeout' => 5.0,
-        ]);
+        $tosClient = new Client(
+            [
+                'base_uri' => "http://" . $uploadHost,
+                'timeout' => 5.0,
+            ]
+        );
 
-        $response = $tosClient->request('PUT', $storeInfo["StoreUri"], ["body" => $body, "headers" => ['Authorization' => $storeInfo["Auth"], 'Content-CRC32' => $crc32]]);
-        $uploadResponse = json_decode((string) $response->getBody(), true);
+        $response = $tosClient->request(
+            'PUT',
+            $storeInfo["StoreUri"],
+            [
+                "body" => $body,
+                "headers" => [
+                    'Authorization' => $storeInfo["Auth"],
+                    'Content-CRC32' => $crc32
+                ]
+            ]
+        );
+        $uploadResponse = json_decode((string)$response->getBody(), true);
         if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
             return -2;
         }
@@ -226,7 +237,7 @@ class ImageX extends V4Curl
         ];
 
         $response = $this->commitUploadImage($commitUploadParams);
-        return (string) $response;
+        return (string)$response;
     }
 
     // getImagexURL 获取图片地址
@@ -235,14 +246,13 @@ class ImageX extends V4Curl
         $domainInfo = $this->getDomainInfo($serviceID, $fallbackWeights);
 
         $proto = ImageXOption::$HTTP;
-        if ($opt->getHTTPs()) 
-        {
+        if ($opt->getHTTPs()) {
             $proto = ImageXOption::$HTTPS;
         }
 
         $format = $opt->getFormat();
 
-        $mainURL   = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['MainDomain'], $uri, $tpl, $format);
+        $mainURL = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['MainDomain'], $uri, $tpl, $format);
         $backupURL = sprintf('%s://%s/%s~%s.%s', $proto, $domainInfo['BackupDomain'], $uri, $tpl, $format);
         return ['MainUrl' => $mainURL, 'BackupUrl' => $backupURL];
     }
@@ -270,13 +280,10 @@ class ImageX extends V4Curl
     {
         $actions = ['ImageX:ApplyImageUpload', 'ImageX:CommitImageUpload'];
         $resources = [];
-        if (sizeof($serviceIDList) == 0)
-        {
+        if (sizeof($serviceIDList) == 0) {
             $resources[] = sprintf(ResourceServiceIdTRN, "*");
-        }else
-        {
-            foreach ($serviceIDList as $serviceID)
-            {
+        } else {
+            foreach ($serviceIDList as $serviceID) {
                 $resources[] = sprintf(ResourceServiceIdTRN, $serviceID);
             }
         }
@@ -293,17 +300,18 @@ class ImageX extends V4Curl
     private function getDomainInfo(string $serviceID, array $fallbackWeights)
     {
         $now = time();
-        if ($now - $this->lastDomainUpdateTime <= Imagex::$updateInterval) 
-        {
+        if ($now - $this->lastDomainUpdateTime <= Imagex::$updateInterval) {
             // 命中cache
             $domainArray = $this->domainCache[$serviceID];
             return $this->packDomainInfo($domainArray);
-        }   
+        }
 
         $this->lastDomainUpdateTime = time();
-        $response = $this->request('GetCdnDomainWeights', ['query' => ['ServiceId' => $serviceID, 'ProductLine' => 'imagex']]);
+        $response = $this->request(
+            'GetCdnDomainWeights',
+            ['query' => ['ServiceId' => $serviceID, 'ProductLine' => 'imagex']]
+        );
         $respJson = json_decode($response->getBody(), true);
-        var_dump($respJson);
 
         if (array_key_exists('Error', $respJson['ResponseMetadata']) || !is_array($respJson['Result'][$serviceID])) {
             $this->domainCache[$serviceID] = $fallbackWeights;
@@ -317,7 +325,7 @@ class ImageX extends V4Curl
     }
 
     // packDomainInfo
-    private function packDomainInfo(array $domainArray) 
+    private function packDomainInfo(array $domainArray)
     {
         $mainDomain = $this->randWeights($domainArray, '');
         $backupDomain = $this->randWeights($domainArray, $mainDomain);
@@ -325,7 +333,7 @@ class ImageX extends V4Curl
     }
 
     // randWeigths
-	private function randWeights(array $domainWights, string $excludeDomain)
+    private function randWeights(array $domainWights, string $excludeDomain)
     {
         $weightSum = 0;
         foreach ($domainWights as $key => $value) {
