@@ -216,7 +216,7 @@ class ImageX extends V4Curl
         for ($i = 0; $i < count($filePaths); ++$i) {
             $respCode = $this->upload($uploadHost, $uploadAddr['StoreInfos'][$i], $filePaths[$i]);
             if ($respCode != 0) {
-                return "upload " . $filePaths[i] . " error";
+                return "upload " . $filePaths[$i] . " error";
             }
         }
 
