@@ -23,12 +23,12 @@ $editParam = [
         'Width' => 1280,
         'Quality' => 'medium',
     ],
-    'Segments' => [
+    'Segments' => [[
         'BackGround' => '0xFFFFFFFF',
         'Duration' => 3,
         'Elements' => [],
         'Volume' => 1,
-    ],
+    ]],
     'GlobalElements' => []
 ];
 
