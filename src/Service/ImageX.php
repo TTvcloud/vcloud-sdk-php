@@ -229,6 +229,12 @@ class ImageX extends V4Curl
         return (string) $response;
     }
 
+    public function deleteImages(string $serviceID, array $uris = [])
+    {
+        $response = $this->request('DeleteImageUploadFiles', ['query' => ['ServiceId' => $serviceID], 'json' => ['StoreUris' => $uris]]);
+        return (string)$response->getBody();
+    }
+
     // getImagexURL 获取图片地址
     public function getImageXURL(string $serviceID, string $uri, string $tpl, array $fallbackWeights, ImageXOption $opt)
     {
@@ -388,6 +394,16 @@ class ImageX extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'UpdateImageUploadFiles',
+                    'Version' => '2018-08-01',
+                ],
+            ]
+        ],
+        'DeleteImageUploadFiles' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'DeleteImageUploadFiles',
                     'Version' => '2018-08-01',
                 ],
             ]
