@@ -23,6 +23,12 @@ class Edit extends V4Curl
         ];
     }
 
+    public function submitSubtitleRecognizationTaskAsync(array $query = [])
+    {
+        $response = $this->request('SubmitSubtitleRecognizationTaskAsync', $query);
+        return $response->getBody();
+    }
+
     public function submitTemplateTaskAsync(array $query = [])
     {
         $response = $this->request('SubmitTemplateTaskAsync', $query);
@@ -48,6 +54,16 @@ class Edit extends V4Curl
     }
 
     protected $apiList = [
+        'SubmitSubtitleRecognizationTaskAsync' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'SubmitSubtitleRecognizationTaskAsync',
+                    'Version' => '2018-01-01',
+                ],
+            ],
+        ],
         'SubmitTemplateTaskAsync' => [
             'url' => '/',
             'method' => 'post',
