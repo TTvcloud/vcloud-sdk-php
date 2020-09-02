@@ -309,7 +309,6 @@ class ImageX extends V4Curl
         $this->lastDomainUpdateTime = time();
         $response = $this->request('GetCdnDomainWeights', ['query' => ['ServiceId' => $serviceID, 'ProductLine' => 'imagex']]);
         $respJson = json_decode($response->getBody(), true);
-        var_dump($respJson);
 
         if (array_key_exists('Error', $respJson['ResponseMetadata']) || !is_array($respJson['Result'][$serviceID])) {
             $this->domainCache[$serviceID] = $fallbackWeights;
