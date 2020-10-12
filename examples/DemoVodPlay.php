@@ -11,7 +11,7 @@ $vid = "";
 $expire = 60; // 请求的签名有效期
 
 echo "\nstaging 获取播放地址\n";
-$response = $client->getPlayInfo(['query' => ['video_id' => $vid]]);
+$response = $client->getPlayInfo(['query' => ['Vid' => $vid]]);
 echo $response;
 
 echo "\n获取源片播放地址\n";

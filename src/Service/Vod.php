@@ -410,7 +410,7 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'GetPlayInfo',
-                    'Version' => '2019-03-15',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
@@ -450,7 +450,7 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'RedirectPlay',
-                    'Version' => '2018-01-01',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
@@ -460,7 +460,7 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'GetOriginVideoPlayInfo',
-                    'Version' => '2018-01-01',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
