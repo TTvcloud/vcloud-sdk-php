@@ -13,9 +13,12 @@ $callbackArgs = "";
 echo "\n启动工作流\n";
 $input = json_encode(array());
 $response = $client->startWorkflow([
-    'form_params' => ['TemplateId' => $tid], 
-    'Vid' => $vid, 
-    'Input' => $input, 
-    'Priority' => 0,
-    'CallbackArgs' => $callbackArgs]); 
+    'form_params' => [
+            'TemplateId' => $tid,
+            'Vid' => $vid, 
+            'Input' => $input, 
+            'Priority' => 0,
+            'CallbackArgs' => $callbackArgs
+        ]
+    ]); 
 echo $response;
