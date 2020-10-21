@@ -235,9 +235,9 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
-    public function startTranscode(array $query)
+    public function startWorkflow(array $query)
     {
-        $response = $this->request('StartTranscode', $query);
+        $response = $this->request('StartWorkflow', $query);
         return (string)$response->getBody();
     }
 
@@ -424,13 +424,13 @@ class Vod extends V4Curl
                 ],
             ]
         ],
-        'StartTranscode' => [
+        'StartWorkflow' => [
             'url' => '/',
             'method' => 'post',
             'config' => [
                 'query' => [
-                    'Action' => 'StartTranscode',
-                    'Version' => '2018-01-01',
+                    'Action' => 'StartWorkflow',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
