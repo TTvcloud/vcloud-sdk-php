@@ -2,8 +2,14 @@
 
 namespace Vcloud\Service;
 
+use Exception;
 use Vcloud\Base\V4Curl;
-use GuzzleHttp\Client;
+use \GuzzleHttp\Client;
+use \GuzzleHttp;
+use Vcloud\Models\Vod\VodGetOriginalPlayInfoRequest;
+use Vcloud\Models\Vod\VodGetOriginalPlayInfoResponse;
+use Vcloud\Models\Vod\VodGetPlayInfoRequest;
+use Vcloud\Models\Vod\VodGetPlayInfoResponse;
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
 const ResourceVideoFormat = "trn:vod::*:video_id/%s";
@@ -26,7 +32,8 @@ class Vod extends V4Curl
         switch ($region) {
             case 'cn-north-1':
                 $config = [
-                    'host' => 'https://vod.bytedanceapi.com',
+                    'host' => 'https://staging-openapi-boe.byted.org',
+//                    'host' => 'https://vod.bytedanceapi.com',
                     'config' => [
                         'timeout' => 5.0,
                         'headers' => [
@@ -99,22 +106,97 @@ class Vod extends V4Curl
         }
     }
 
-    public function getPlayInfo(array $query)
+    public function getPlayInfo(VodGetPlayInfoRequest $vodGetPlayInfoRequest): VodGetPlayInfoResponse
     {
-        $response = $this->request('GetPlayInfo', $query);
-        return (string)$response->getBody();
+        $respData = new VodGetPlayInfoResponse();
+        $query = array();
+        if ($vodGetPlayInfoRequest->Vid == null || $vodGetPlayInfoRequest->Vid == "") {
+            throw new Exception('InvalidParameter');
+        } else {
+            $query['Vid'] = $vodGetPlayInfoRequest->Vid;
+        }
+        if ($vodGetPlayInfoRequest->Format == null || $vodGetPlayInfoRequest->Format == "") {
+            $query['Format'] = 'mp4';
+        } else {
+            $query['Format'] = $vodGetPlayInfoRequest->Format;
+        }
+        if ($vodGetPlayInfoRequest->Codec == null || $vodGetPlayInfoRequest->Codec == "") {
+            $query['Codec'] = 'h264';
+        } else {
+            $query['Codec'] = $vodGetPlayInfoRequest->Codec;
+        }
+        if ($vodGetPlayInfoRequest->Definition != null) {
+            $query['Definition'] = $vodGetPlayInfoRequest->Definition;
+        }
+        if ($vodGetPlayInfoRequest->FileType == null || $vodGetPlayInfoRequest->FileType == "") {
+            $query['FileType'] = 'video';
+        } else {
+            $query['FileType'] = $vodGetPlayInfoRequest->FileType;
+        }
+        if ($vodGetPlayInfoRequest->LogoType != null) {
+            $query['LogoType'] = $vodGetPlayInfoRequest->LogoType;
+        }
+        if ($vodGetPlayInfoRequest->Base64 == null || $vodGetPlayInfoRequest->Base64 != "1") {
+            $query['Base64'] = '0';
+        } else {
+            $query['Base64'] = '1';
+        }
+        if ($vodGetPlayInfoRequest->Ssl == null || $vodGetPlayInfoRequest->Ssl != "1") {
+            $query['Ssl'] = '0';
+        } else {
+            $query['Ssl'] = '1';
+        }
+        $response = $this->request('GetPlayInfo', ['query' => $query]);
+        if($response->getStatusCode() != 200) {
+            throw new Exception($response->getReasonPhrase());
+        }
+        $res_json = json_decode($response->getBody(), true);
+        if(array_key_exists("Error", $res_json['ResponseMetadata'])) {
+            throw new Exception($res_json['ResponseMetadata']['Error']['Code']);
+        } else {
+            try {
+                $respData->deserialize($res_json['Result']);
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+        return $respData;
     }
 
-    public function getOriginVideoPlayInfo(array $query)
+    public function getOriginVideoPlayInfo(VodGetOriginalPlayInfoRequest $vodGetOriginalPlayInfoRequest): VodGetOriginalPlayInfoResponse
     {
-        $response = $this->request('GetOriginVideoPlayInfo', $query);
-        return (string)$response->getBody();
-    }
-
-    public function getRedirectPlay(array $query)
-    {
-        $response = $this->getRequestUrl('RedirectPlay', $query);
-        return $response;
+        $respData = new VodGetOriginalPlayInfoResponse();
+        $query = array();
+        if ($vodGetOriginalPlayInfoRequest->Vid == null || $vodGetOriginalPlayInfoRequest->Vid == "") {
+            throw new Exception('InvalidParameter');
+        } else {
+            $query['Vid'] = $vodGetOriginalPlayInfoRequest->Vid;
+        }
+        if ($vodGetOriginalPlayInfoRequest->Base64 == null || $vodGetOriginalPlayInfoRequest->Base64 != "1") {
+            $query['Base64'] = '0';
+        } else {
+            $query['Base64'] = '1';
+        }
+        if ($vodGetOriginalPlayInfoRequest->Ssl == null || $vodGetOriginalPlayInfoRequest->Ssl != "1") {
+            $query['Ssl'] = '0';
+        } else {
+            $query['Ssl'] = '1';
+        }
+        $response = $this->request('GetOriginVideoPlayInfo', ['query' => $query]);
+        if($response->getStatusCode() != 200) {
+            throw new Exception($response->getReasonPhrase());
+        }
+        $res_json = json_decode($response->getBody(), true);
+        if(array_key_exists("Error", $res_json['ResponseMetadata'])) {
+            throw new Exception($res_json['ResponseMetadata']['Error']['Code']);
+        } else {
+            try {
+                $respData->deserialize($res_json['Result']);
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+        return $respData;
     }
 
     // 开放参数设置
