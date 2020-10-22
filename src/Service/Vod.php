@@ -5,11 +5,14 @@ namespace Vcloud\Service;
 use Exception;
 use Vcloud\Base\V4Curl;
 use \GuzzleHttp\Client;
-use \GuzzleHttp;
 use Vcloud\Models\Vod\VodGetOriginalPlayInfoRequest;
 use Vcloud\Models\Vod\VodGetOriginalPlayInfoResponse;
 use Vcloud\Models\Vod\VodGetPlayInfoRequest;
 use Vcloud\Models\Vod\VodGetPlayInfoResponse;
+
+
+//use Vcloud\Models\Vod\VodGetPlayInfoResponse;
+//use Vcloud\Models\Vod\VodGetPlayInfoRequest;
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
 const ResourceVideoFormat = "trn:vod::*:video_id/%s";
@@ -108,93 +111,83 @@ class Vod extends V4Curl
 
     public function getPlayInfo(VodGetPlayInfoRequest $vodGetPlayInfoRequest): VodGetPlayInfoResponse
     {
-        $respData = new VodGetPlayInfoResponse();
         $query = array();
-        if ($vodGetPlayInfoRequest->Vid == null || $vodGetPlayInfoRequest->Vid == "") {
+        if ($vodGetPlayInfoRequest->getVid() == null || $vodGetPlayInfoRequest->getVid() == "") {
             throw new Exception('InvalidParameter');
         } else {
-            $query['Vid'] = $vodGetPlayInfoRequest->Vid;
+            $query['Vid'] = $vodGetPlayInfoRequest->getVid();
         }
-        if ($vodGetPlayInfoRequest->Format == null || $vodGetPlayInfoRequest->Format == "") {
+        if ($vodGetPlayInfoRequest->getFormat() == null || $vodGetPlayInfoRequest->getFormat() == "") {
             $query['Format'] = 'mp4';
         } else {
-            $query['Format'] = $vodGetPlayInfoRequest->Format;
+            $query['Format'] = $vodGetPlayInfoRequest->getFormat();
         }
-        if ($vodGetPlayInfoRequest->Codec == null || $vodGetPlayInfoRequest->Codec == "") {
+        if ($vodGetPlayInfoRequest->getCodec() == null || $vodGetPlayInfoRequest->getCodec() == "") {
             $query['Codec'] = 'h264';
         } else {
-            $query['Codec'] = $vodGetPlayInfoRequest->Codec;
+            $query['Codec'] = $vodGetPlayInfoRequest->getCodec();
         }
-        if ($vodGetPlayInfoRequest->Definition != null) {
-            $query['Definition'] = $vodGetPlayInfoRequest->Definition;
+        if ($vodGetPlayInfoRequest->getDefinition() != null) {
+            $query['Definition'] = $vodGetPlayInfoRequest->getDefinition();
         }
-        if ($vodGetPlayInfoRequest->FileType == null || $vodGetPlayInfoRequest->FileType == "") {
+        if ($vodGetPlayInfoRequest->getFileType() == null || $vodGetPlayInfoRequest->getFileType() == "") {
             $query['FileType'] = 'video';
         } else {
-            $query['FileType'] = $vodGetPlayInfoRequest->FileType;
+            $query['FileType'] = $vodGetPlayInfoRequest->getFileType();
         }
-        if ($vodGetPlayInfoRequest->LogoType != null) {
-            $query['LogoType'] = $vodGetPlayInfoRequest->LogoType;
+        if ($vodGetPlayInfoRequest->getLogoType() != null) {
+            $query['LogoType'] = $vodGetPlayInfoRequest->getLogoType();
         }
-        if ($vodGetPlayInfoRequest->Base64 == null || $vodGetPlayInfoRequest->Base64 != "1") {
+        if ($vodGetPlayInfoRequest->getBase64() == null || $vodGetPlayInfoRequest->getBase64() != "1") {
             $query['Base64'] = '0';
         } else {
             $query['Base64'] = '1';
         }
-        if ($vodGetPlayInfoRequest->Ssl == null || $vodGetPlayInfoRequest->Ssl != "1") {
+        if ($vodGetPlayInfoRequest->getSsl() == null || $vodGetPlayInfoRequest->getSsl() != "1") {
             $query['Ssl'] = '0';
         } else {
             $query['Ssl'] = '1';
         }
         $response = $this->request('GetPlayInfo', ['query' => $query]);
-        if($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() != 200) {
             throw new Exception($response->getReasonPhrase());
         }
-        $res_json = json_decode($response->getBody(), true);
-        if(array_key_exists("Error", $res_json['ResponseMetadata'])) {
-            throw new Exception($res_json['ResponseMetadata']['Error']['Code']);
-        } else {
-            try {
-                $respData->deserialize($res_json['Result']);
-            } catch (Exception $e) {
-                throw $e;
-            }
+        $respData = new VodGetPlayInfoResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            throw $e;
         }
         return $respData;
     }
 
     public function getOriginVideoPlayInfo(VodGetOriginalPlayInfoRequest $vodGetOriginalPlayInfoRequest): VodGetOriginalPlayInfoResponse
     {
-        $respData = new VodGetOriginalPlayInfoResponse();
         $query = array();
-        if ($vodGetOriginalPlayInfoRequest->Vid == null || $vodGetOriginalPlayInfoRequest->Vid == "") {
+        if ($vodGetOriginalPlayInfoRequest->getVid() == null || $vodGetOriginalPlayInfoRequest->getVid() == "") {
             throw new Exception('InvalidParameter');
         } else {
-            $query['Vid'] = $vodGetOriginalPlayInfoRequest->Vid;
+            $query['Vid'] = $vodGetOriginalPlayInfoRequest->getVid();
         }
-        if ($vodGetOriginalPlayInfoRequest->Base64 == null || $vodGetOriginalPlayInfoRequest->Base64 != "1") {
+        if ($vodGetOriginalPlayInfoRequest->getBase64() == null || $vodGetOriginalPlayInfoRequest->getBase64() != "1") {
             $query['Base64'] = '0';
         } else {
             $query['Base64'] = '1';
         }
-        if ($vodGetOriginalPlayInfoRequest->Ssl == null || $vodGetOriginalPlayInfoRequest->Ssl != "1") {
+        if ($vodGetOriginalPlayInfoRequest->getSsl() == null || $vodGetOriginalPlayInfoRequest->getSsl() != "1") {
             $query['Ssl'] = '0';
         } else {
             $query['Ssl'] = '1';
         }
         $response = $this->request('GetOriginVideoPlayInfo', ['query' => $query]);
-        if($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() != 200) {
             throw new Exception($response->getReasonPhrase());
         }
-        $res_json = json_decode($response->getBody(), true);
-        if(array_key_exists("Error", $res_json['ResponseMetadata'])) {
-            throw new Exception($res_json['ResponseMetadata']['Error']['Code']);
-        } else {
-            try {
-                $respData->deserialize($res_json['Result']);
-            } catch (Exception $e) {
-                throw $e;
-            }
+        $respData = new VodGetOriginalPlayInfoResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            throw $e;
         }
         return $respData;
     }
