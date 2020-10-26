@@ -14,9 +14,7 @@ use Google\Protobuf\Internal\GPBUtil;
 class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
 {
     /**
-     * 唯一ID
-     *
-     * Generated from protobuf field <code>string Vid = 1;</code>
+     * Generated from protobuf field <code>string Vid = 1 [(.validator.field) = {</code>
      */
     protected $Vid = '';
     /**
@@ -75,7 +73,6 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $Vid
-     *           唯一ID
      *     @type int|string $Status
      *          状态
      *     @type string $PosterUrl
@@ -100,9 +97,7 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * 唯一ID
-     *
-     * Generated from protobuf field <code>string Vid = 1;</code>
+     * Generated from protobuf field <code>string Vid = 1 [(.validator.field) = {</code>
      * @return string
      */
     public function getVid()
@@ -111,9 +106,7 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * 唯一ID
-     *
-     * Generated from protobuf field <code>string Vid = 1;</code>
+     * Generated from protobuf field <code>string Vid = 1 [(.validator.field) = {</code>
      * @param string $var
      * @return $this
      */

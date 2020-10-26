@@ -16,7 +16,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      * 视频ID
      *
-     * Generated from protobuf field <code>string Vid = 1;</code>
+     * Generated from protobuf field <code>string Vid = 1 [(.validator.field) = {</code>
      */
     protected $Vid = '';
     /**
@@ -38,13 +38,13 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
      */
     protected $Definition = '';
     /**
-     * Definition
+     *流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *
      * Generated from protobuf field <code>string FileType = 5;</code>
      */
     protected $FileType = '';
     /**
-     * FileType
+     * 水印贴片标签
      *
      * Generated from protobuf field <code>string LogoType = 6;</code>
      */
@@ -77,9 +77,9 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
      *     @type string $Definition
      *          视频流清晰度，默认返回全部，支持：240p，360p，480p，540p，720p，1080p
      *     @type string $FileType
-     *           Definition
+     *          流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *     @type string $LogoType
-     *           FileType
+     *           水印贴片标签
      *     @type string $Base64
      *          播放地址是否base64编码，默认否，支持设置： 0-否，1-是
      *     @type string $Ssl
@@ -94,7 +94,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      * 视频ID
      *
-     * Generated from protobuf field <code>string Vid = 1;</code>
+     * Generated from protobuf field <code>string Vid = 1 [(.validator.field) = {</code>
      * @return string
      */
     public function getVid()
@@ -105,7 +105,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      * 视频ID
      *
-     * Generated from protobuf field <code>string Vid = 1;</code>
+     * Generated from protobuf field <code>string Vid = 1 [(.validator.field) = {</code>
      * @param string $var
      * @return $this
      */
@@ -196,7 +196,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Definition
+     *流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *
      * Generated from protobuf field <code>string FileType = 5;</code>
      * @return string
@@ -207,7 +207,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Definition
+     *流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *
      * Generated from protobuf field <code>string FileType = 5;</code>
      * @param string $var
@@ -222,7 +222,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * FileType
+     * 水印贴片标签
      *
      * Generated from protobuf field <code>string LogoType = 6;</code>
      * @return string
@@ -233,7 +233,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * FileType
+     * 水印贴片标签
      *
      * Generated from protobuf field <code>string LogoType = 6;</code>
      * @param string $var

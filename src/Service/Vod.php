@@ -4,6 +4,8 @@ namespace Vcloud\Service;
 
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
+use Vcloud\Models\Vod\URLSet;
+use Vcloud\Models\Vod\VodUrlUploadRequest;
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
 const ResourceVideoFormat = "trn:vod::*:video_id/%s";
@@ -281,9 +283,11 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
-    public function uploadVideoByUrl(\VodUploadVideoRequest $request)
+    public function uploadVideoByUrl(VodUrlUploadRequest $request)
     {
-        $query = ['query' => ['SpaceName' => $request->getSpaceName(), 'URLSets' => $request->getURLSetsJson()]];
+        $query = ['query' => ['SpaceName' => $request->getSpaceName(), 'URLSets' => $request->serializeToJsonString()]];
+        echo $request->serializeToJsonString(), "\n";
+        print_r($query['query']['URLSets']);
         $response = $this->request('UploadVideoByUrl', $query);
         return (string)$response->getBody();
     }
