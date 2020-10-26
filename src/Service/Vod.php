@@ -15,6 +15,7 @@ const ActionCommitUpload = "vod:CommitUpload";
 const Star = "*";
 const Statement = "Statement";
 
+
 class Vod extends V4Curl
 {
     private static $UPDATE_INTERVAL = 10;
@@ -26,11 +27,15 @@ class Vod extends V4Curl
         switch ($region) {
             case 'cn-north-1':
                 $config = [
-                    'host' => 'https://vod.bytedanceapi.com',
+//                    'host' => 'https://vod.bytedanceapi.com',
+                    //TODO 测试完毕修改回来
+                    'host' => 'https://staging-openapi-boe.byted.org',
                     'config' => [
                         'timeout' => 5.0,
                         'headers' => [
-                            'Accept' => 'application/json'
+                            'Accept' => 'application/json',
+                            //TODO 测试完毕后删掉
+                            'X-TT-ENV' => 'boe_husky_feature',
                         ],
                         'v4_credentials' => [
                             'region' => 'cn-north-1',
@@ -150,6 +155,18 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
+    public function applyUploadInfo(array $query)
+    {
+        $response = $this->request('ApplyUploadInfo', $query);
+        return (string)$response->getBody();
+    }
+
+    public function commitUploadInfo(array $query)
+    {
+        $response = $this->request('CommitUploadInfo', $query);
+        return (string)$response->getBody();
+    }
+
     public function commitUpload(array $query)
     {
         $response = $this->request('CommitUpload', $query);
@@ -203,6 +220,31 @@ class Vod extends V4Curl
         return array(0, "", $session, $oid);
     }
 
+    public function uploadToB(array $applyRequest = [], string $filePath)
+    {
+        if (!file_exists($filePath)) {
+            return array(-1, "file not exists", "", "");
+        }
+        $content = file_get_contents($filePath);
+        $crc32 = dechex(crc32($content));
+
+        $response = $this->applyUploadInfo($applyRequest);
+        $applyResponse = json_decode($response, true);
+        if (isset($applyResponse["ResponseMetadata"]["Error"])) {
+            return array(-1, $applyResponse["ResponseMetadata"]["Error"]["Message"], "", "");
+        }
+        $uploadHost = $applyResponse['Result']['Data']['UploadAddress']['UploadHosts'][0];
+        $oid = $applyResponse['Result']['Data']['UploadAddress']['StoreInfos'][0]['StoreUri'];
+        $session = $applyResponse['Result']['Data']['UploadAddress']['SessionKey'];
+
+        $respCode = $this->uploadFile($uploadHost, $applyResponse['Result']['Data']['UploadAddress']['StoreInfos'][0], $filePath);
+        if ($respCode != 0) {
+            return array(-1, "upload " . $filePath . " error", "", "");
+        }
+
+        return array(0, "", $session, $oid);
+    }
+
     public function uploadVideo(string $spaceName, string $filePath, array $functions = [])
     {
         $resp = $this->upload($spaceName, $filePath, "video");
@@ -210,6 +252,16 @@ class Vod extends V4Curl
             return $resp[1];
         }
         $response = $this->commitUpload(['query' => ['SpaceName' => $spaceName], 'json' => ['SessionKey' => $resp[2], 'Functions' => $functions]]);
+        return (string)$response;
+    }
+
+    public function uploadVideoToB(array $applyRequest = [], string $filePath, string $functions)
+    {
+        $resp = $this->uploadToB($applyRequest, $filePath);
+        if ($resp[0] != 0) {
+            return $resp[1];
+        }
+        $response = $this->commitUploadInfo(['query' => ['SpaceName' => $applyRequest['query']['SpaceName'], 'SessionKey' => $resp[2], 'Functions' => $functions]]);
         return (string)$response;
     }
 
@@ -226,6 +278,19 @@ class Vod extends V4Curl
     public function uploadMediaByUrl(array $query)
     {
         $response = $this->request('UploadMediaByUrl', $query);
+        return (string)$response->getBody();
+    }
+
+    public function uploadVideoByUrl(\VodUploadVideoRequest $request)
+    {
+        $query = ['query' => ['SpaceName' => $request->getSpaceName(), 'URLSets' => $request->getURLSetsJson()]];
+        $response = $this->request('UploadVideoByUrl', $query);
+        return (string)$response->getBody();
+    }
+
+    public function queryUploadTaskInfo(array $query)
+    {
+        $response = $this->request('QueryUploadTaskInfo', $query);
         return (string)$response->getBody();
     }
 
@@ -394,6 +459,29 @@ class Vod extends V4Curl
                 ],
             ]
         ],
+        'ApplyUploadInfo' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'ApplyUploadInfo',
+                    'Version' => '2020-08-01',
+                ],
+            ]
+        ],
+        'CommitUploadInfo' => [
+            'url' => '/',
+            'method' => 'post',
+            'config' => [
+                'query' => [
+                    'Action' => 'CommitUploadInfo',
+                    'Version' => '2020-08-01',
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded'
+                ],
+            ]
+        ],
         'CommitUpload' => [
             'url' => '/',
             'method' => 'post',
@@ -421,6 +509,26 @@ class Vod extends V4Curl
                 'query' => [
                     'Action' => 'UploadMediaByUrl',
                     'Version' => '2018-01-01',
+                ],
+            ]
+        ],
+        'UploadVideoByUrl' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'UploadVideoByUrl',
+                    'Version' => '2020-08-01',
+                ],
+            ]
+        ],
+        'QueryUploadTaskInfo' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'QueryUploadTaskInfo',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
