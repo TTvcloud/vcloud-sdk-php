@@ -138,12 +138,12 @@ class Vod extends V4Curl
         if ($vodGetPlayInfoRequest->getLogoType() != null) {
             $query['LogoType'] = $vodGetPlayInfoRequest->getLogoType();
         }
-        if ($vodGetPlayInfoRequest->getBase64() == null || $vodGetPlayInfoRequest->getBase64() != "1") {
-            $query['Base64'] = '0';
+        if ($vodGetPlayInfoRequest->getBase64() == null || $vodGetPlayInfoRequest->getBase64() != 1) {
+            $query['Base64'] = 0;
         } else {
-            $query['Base64'] = '1';
+            $query['Base64'] = 1;
         }
-        if ($vodGetPlayInfoRequest->getSsl() == null || $vodGetPlayInfoRequest->getSsl() != "1") {
+        if ($vodGetPlayInfoRequest->getSsl() == null || $vodGetPlayInfoRequest->getSsl() != 1) {
             $query['Ssl'] = '0';
         } else {
             $query['Ssl'] = '1';
@@ -169,15 +169,15 @@ class Vod extends V4Curl
         } else {
             $query['Vid'] = $vodGetOriginalPlayInfoRequest->getVid();
         }
-        if ($vodGetOriginalPlayInfoRequest->getBase64() == null || $vodGetOriginalPlayInfoRequest->getBase64() != "1") {
-            $query['Base64'] = '0';
+        if ($vodGetOriginalPlayInfoRequest->getBase64() == null || $vodGetOriginalPlayInfoRequest->getBase64() != 1) {
+            $query['Base64'] = 0;
         } else {
-            $query['Base64'] = '1';
+            $query['Base64'] = 1;
         }
-        if ($vodGetOriginalPlayInfoRequest->getSsl() == null || $vodGetOriginalPlayInfoRequest->getSsl() != "1") {
-            $query['Ssl'] = '0';
+        if ($vodGetOriginalPlayInfoRequest->getSsl() == null || $vodGetOriginalPlayInfoRequest->getSsl() != 1) {
+            $query['Ssl'] = 0;
         } else {
-            $query['Ssl'] = '1';
+            $query['Ssl'] = 1;
         }
         $response = $this->request('GetOriginVideoPlayInfo', ['query' => $query]);
         if ($response->getStatusCode() != 200) {
