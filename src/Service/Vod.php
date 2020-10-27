@@ -4,6 +4,7 @@ namespace Vcloud\Service;
 
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
+use Vcloud\Models\Vod\QueryUploadTaskInfoResponse;
 use Vcloud\Models\Vod\URLSet;
 use Vcloud\Models\Vod\VodUrlUploadRequest;
 
@@ -106,10 +107,56 @@ class Vod extends V4Curl
         }
     }
 
-    public function getPlayInfo(array $query)
+    public function getPlayInfo(VodGetPlayInfoRequest $vodGetPlayInfoRequest): VodGetPlayInfoResponse
     {
-        $response = $this->request('GetPlayInfo', $query);
-        return (string)$response->getBody();
+        $query = array();
+        if ($vodGetPlayInfoRequest->getVid() == null || $vodGetPlayInfoRequest->getVid() == "") {
+            throw new Exception('InvalidParameter');
+        } else {
+            $query['Vid'] = $vodGetPlayInfoRequest->getVid();
+        }
+        if ($vodGetPlayInfoRequest->getFormat() == null || $vodGetPlayInfoRequest->getFormat() == "") {
+            $query['Format'] = 'mp4';
+        } else {
+            $query['Format'] = $vodGetPlayInfoRequest->getFormat();
+        }
+        if ($vodGetPlayInfoRequest->getCodec() == null || $vodGetPlayInfoRequest->getCodec() == "") {
+            $query['Codec'] = 'h264';
+        } else {
+            $query['Codec'] = $vodGetPlayInfoRequest->getCodec();
+        }
+        if ($vodGetPlayInfoRequest->getDefinition() != null) {
+            $query['Definition'] = $vodGetPlayInfoRequest->getDefinition();
+        }
+        if ($vodGetPlayInfoRequest->getFileType() == null || $vodGetPlayInfoRequest->getFileType() == "") {
+            $query['FileType'] = 'video';
+        } else {
+            $query['FileType'] = $vodGetPlayInfoRequest->getFileType();
+        }
+        if ($vodGetPlayInfoRequest->getLogoType() != null) {
+            $query['LogoType'] = $vodGetPlayInfoRequest->getLogoType();
+        }
+        if ($vodGetPlayInfoRequest->getBase64() == null || $vodGetPlayInfoRequest->getBase64() != "1") {
+            $query['Base64'] = '0';
+        } else {
+            $query['Base64'] = '1';
+        }
+        if ($vodGetPlayInfoRequest->getSsl() == null || $vodGetPlayInfoRequest->getSsl() != "1") {
+            $query['Ssl'] = '0';
+        } else {
+            $query['Ssl'] = '1';
+        }
+        $response = $this->request('GetPlayInfo', ['query' => $query]);
+        if ($response->getStatusCode() != 200) {
+            throw new Exception($response->getReasonPhrase());
+        }
+        $respData = new VodGetPlayInfoResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $respData;
     }
 
     public function getOriginVideoPlayInfo(array $query)
@@ -283,19 +330,25 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
-    public function uploadVideoByUrl(VodUrlUploadRequest $request)
+    public function uploadVideoByUrl(\VodUrlUploadRequest $request)
     {
-        $query = ['query' => ['SpaceName' => $request->getSpaceName(), 'URLSets' => $request->serializeToJsonString()]];
-        echo $request->serializeToJsonString(), "\n";
-        print_r($query['query']['URLSets']);
+        $query = ['query' => ['SpaceName' => $request->getSpaceName(), 'URLSets' => $request->getURLSetsJson()]];
         $response = $this->request('UploadVideoByUrl', $query);
         return (string)$response->getBody();
     }
 
-    public function queryUploadTaskInfo(array $query)
+    public function queryUploadTaskInfo(\VodQueryUploadTaskInfoRequest $request)
     {
-        $response = $this->request('QueryUploadTaskInfo', $query);
-        return (string)$response->getBody();
+        $response = $this->request('QueryUploadTaskInfo', $request->getRequestArray());
+
+        $respData = new QueryUploadTaskInfoResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $respData;
+//        return (string)$response->getBody();
     }
 
     public function modifyVideoInfo(array $query)

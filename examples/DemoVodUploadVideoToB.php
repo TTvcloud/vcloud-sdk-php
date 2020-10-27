@@ -17,5 +17,5 @@ $file = "/Users/bytedance/Downloads/objects.mp4";
 
 $functionsStr = json_encode([['Name' => 'Snapshot', 'Input' => ['SnapshotTime' => 2.3]], ['Name' => 'GetMeta']]);
 
-$response = $client->uploadVideoToB(['query' => ['SpaceName' => $space]], $file, $functionsStr);
+    $response = $client->uploadVideoToB(['query' => ['SpaceName' => $space]], $file, $functionsStr);
 echo $response;

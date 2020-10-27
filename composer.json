@@ -16,8 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Vcloud\\": "src/",
-      ""
+      "Vcloud\\": "src/"
     }
   },
   "description": ""

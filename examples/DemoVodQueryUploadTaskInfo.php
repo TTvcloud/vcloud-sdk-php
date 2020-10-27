@@ -1,7 +1,10 @@
 <?php
 require('../vendor/autoload.php');
+require('../src/Models/Vod/request/VodQueryUploadTaskInfoRequest.php');
+require('../src/Models/Vod/response/QueryUploadTaskInfoResponse.php');
 
 use Vcloud\Service\Vod;
+use Vcloud\Models\Vod\QueryUploadTaskInfoResponse;
 
 
 $client = Vod::getInstance();
@@ -9,8 +12,17 @@ $client = Vod::getInstance();
 $client->setAccessKey('AKLTNDQ2YTRlNTBiYTg1NDcyNmE3MDA1MTUzNzc5MWMwNmI');
 $client->setSecretKey('1ZOtyBZ89VERZdOfiUrPf24a3tTjRo1XIJbzccVHMrBvZo1jEn60LjClP2t05qWz');
 
-$jobIds = ['b7a12ad6ce4541b9895b13067b36c204'];
+$jobId = '020960ee78a441b1856b49abfa122938';
 
-$response = $client->queryUploadTaskInfo(['query' => ['JobIds' => implode(",", $jobIds)]]);
-echo $response;
-echo "\n";
+$request = new VodQueryUploadTaskInfoRequest();
+$request->addJobId($jobId);
+
+$response = new QueryUploadTaskInfoResponse();
+try {
+    $response = $client->queryUploadTaskInfo($request);
+} catch (Exception $e) {
+    echo $e;
+}
+
+echo $response->getResponseMetadata()->getRequestId();
+echo $response->getResult()->getData()->getVideoInfoList()[0]->getVid();
