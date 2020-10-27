@@ -86,32 +86,31 @@ class VodGetOriginalPlayInfoResult extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     * @type string $FileType
+     *     @type string $FileType
      *          返回的媒体类型(video/audio)
-     * @type float $Duration
+     *     @type float $Duration
      *          视频时长(单位：s)
-     * @type int|string $Size
+     *     @type int|string $Size
      *          视频文件大小
-     * @type int|string $Height
+     *     @type int|string $Height
      *          视频高度
-     * @type int|string $Width
+     *     @type int|string $Width
      *          视频宽度
-     * @type string $Format
+     *     @type string $Format
      *          视频格式
-     * @type string $Codec
+     *     @type string $Codec
      *          编码类型
-     * @type float $Bitrate
+     *     @type float $Bitrate
      *          码率(Kbps)
-     * @type string $Md5
+     *     @type string $Md5
      *           hash值
-     * @type string $MainPlayUrl
+     *     @type string $MainPlayUrl
      *          主播放地址
-     * @type string $BackupPlayUrl
+     *     @type string $BackupPlayUrl
      *          备用播放地址
      * }
      */
-    public function __construct($data = NULL)
-    {
+    public function __construct($data = NULL) {
         \Vcloud\Models\GPBMetadata\VodPlay::initOnce();
         parent::__construct($data);
     }
