@@ -38,13 +38,13 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
      */
     protected $Definition = '';
     /**
-     * Definition
+     *流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *
      * Generated from protobuf field <code>string FileType = 5;</code>
      */
     protected $FileType = '';
     /**
-     * FileType
+     * 水印贴片标签
      *
      * Generated from protobuf field <code>string LogoType = 6;</code>
      */
@@ -52,15 +52,15 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *播放地址是否base64编码，默认否，支持设置： 0-否，1-是
      *
-     * Generated from protobuf field <code>string Base64 = 7;</code>
+     * Generated from protobuf field <code>int64 Base64 = 7;</code>
      */
-    protected $Base64 = '';
+    protected $Base64 = 0;
     /**
      *返回https播放地址，默认否, 1-是；0-否
      *
-     * Generated from protobuf field <code>string Ssl = 8;</code>
+     * Generated from protobuf field <code>int64 Ssl = 8;</code>
      */
-    protected $Ssl = '';
+    protected $Ssl = 0;
 
     /**
      * Constructor.
@@ -77,12 +77,12 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
      *     @type string $Definition
      *          视频流清晰度，默认返回全部，支持：240p，360p，480p，540p，720p，1080p
      *     @type string $FileType
-     *           Definition
+     *          流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *     @type string $LogoType
-     *           FileType
-     *     @type string $Base64
+     *           水印贴片标签
+     *     @type int|string $Base64
      *          播放地址是否base64编码，默认否，支持设置： 0-否，1-是
-     *     @type string $Ssl
+     *     @type int|string $Ssl
      *          返回https播放地址，默认否, 1-是；0-否
      * }
      */
@@ -196,7 +196,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Definition
+     *流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *
      * Generated from protobuf field <code>string FileType = 5;</code>
      * @return string
@@ -207,7 +207,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Definition
+     *流文件类型，默认video，支持：加密视频流evideo，加密音频流传eaudio，非加密视频流video，普通音频音频流audio
      *
      * Generated from protobuf field <code>string FileType = 5;</code>
      * @param string $var
@@ -222,7 +222,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * FileType
+     * 水印贴片标签
      *
      * Generated from protobuf field <code>string LogoType = 6;</code>
      * @return string
@@ -233,7 +233,7 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * FileType
+     * 水印贴片标签
      *
      * Generated from protobuf field <code>string LogoType = 6;</code>
      * @param string $var
@@ -250,8 +250,8 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *播放地址是否base64编码，默认否，支持设置： 0-否，1-是
      *
-     * Generated from protobuf field <code>string Base64 = 7;</code>
-     * @return string
+     * Generated from protobuf field <code>int64 Base64 = 7;</code>
+     * @return int|string
      */
     public function getBase64()
     {
@@ -261,13 +261,13 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *播放地址是否base64编码，默认否，支持设置： 0-否，1-是
      *
-     * Generated from protobuf field <code>string Base64 = 7;</code>
-     * @param string $var
+     * Generated from protobuf field <code>int64 Base64 = 7;</code>
+     * @param int|string $var
      * @return $this
      */
     public function setBase64($var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkInt64($var);
         $this->Base64 = $var;
 
         return $this;
@@ -276,8 +276,8 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *返回https播放地址，默认否, 1-是；0-否
      *
-     * Generated from protobuf field <code>string Ssl = 8;</code>
-     * @return string
+     * Generated from protobuf field <code>int64 Ssl = 8;</code>
+     * @return int|string
      */
     public function getSsl()
     {
@@ -287,13 +287,13 @@ class VodGetPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *返回https播放地址，默认否, 1-是；0-否
      *
-     * Generated from protobuf field <code>string Ssl = 8;</code>
-     * @param string $var
+     * Generated from protobuf field <code>int64 Ssl = 8;</code>
+     * @param int|string $var
      * @return $this
      */
     public function setSsl($var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkInt64($var);
         $this->Ssl = $var;
 
         return $this;
