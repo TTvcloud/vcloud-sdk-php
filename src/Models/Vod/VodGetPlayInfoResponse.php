@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetPlayInfoResponse</code>
+ * Generated from protobuf message <code>ttvcloud.models.VodGetPlayInfoResponse</code>
  */
 class VodGetPlayInfoResponse extends \Google\Protobuf\Internal\Message
 {
@@ -18,7 +18,7 @@ class VodGetPlayInfoResponse extends \Google\Protobuf\Internal\Message
      */
     protected $ResponseMetadata = null;
     /**
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodGetPlayInfoResult Result = 2;</code>
+     * Generated from protobuf field <code>.ttvcloud.models.VodGetPlayInfoResult Result = 2;</code>
      */
     protected $Result = null;
 
@@ -60,7 +60,7 @@ class VodGetPlayInfoResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodGetPlayInfoResult Result = 2;</code>
+     * Generated from protobuf field <code>.ttvcloud.models.VodGetPlayInfoResult Result = 2;</code>
      * @return \Vcloud\Models\Vod\VodGetPlayInfoResult
      */
     public function getResult()
@@ -69,7 +69,7 @@ class VodGetPlayInfoResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodGetPlayInfoResult Result = 2;</code>
+     * Generated from protobuf field <code>.ttvcloud.models.VodGetPlayInfoResult Result = 2;</code>
      * @param \Vcloud\Models\Vod\VodGetPlayInfoResult $var
      * @return $this
      */

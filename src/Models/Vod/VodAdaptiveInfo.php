@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VodAdaptiveInfo</code>
+ * Generated from protobuf message <code>ttvcloud.models.VodAdaptiveInfo</code>
  */
 class VodAdaptiveInfo extends \Google\Protobuf\Internal\Message
 {

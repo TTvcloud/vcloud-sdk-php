@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetOriginalPlayInfoRequest</code>
+ * Generated from protobuf message <code>ttvcloud.models.VodGetOriginalPlayInfoRequest</code>
  */
 class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
 {
@@ -22,15 +22,15 @@ class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *播放地址是否base64编码,默认否，0-否，1-是
      *
-     * Generated from protobuf field <code>int64 Base64 = 2;</code>
+     * Generated from protobuf field <code>string Base64 = 2;</code>
      */
-    protected $Base64 = 0;
+    protected $Base64 = '';
     /**
      *返回https播放地址,默认否, 0-否，1-是
      *
-     * Generated from protobuf field <code>int64 Ssl = 3;</code>
+     * Generated from protobuf field <code>string Ssl = 3;</code>
      */
-    protected $Ssl = 0;
+    protected $Ssl = '';
 
     /**
      * Constructor.
@@ -40,9 +40,9 @@ class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
      *
      *     @type string $Vid
      *          视频ID
-     *     @type int|string $Base64
+     *     @type string $Base64
      *          播放地址是否base64编码,默认否，0-否，1-是
-     *     @type int|string $Ssl
+     *     @type string $Ssl
      *          返回https播放地址,默认否, 0-否，1-是
      * }
      */
@@ -80,8 +80,8 @@ class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *播放地址是否base64编码,默认否，0-否，1-是
      *
-     * Generated from protobuf field <code>int64 Base64 = 2;</code>
-     * @return int|string
+     * Generated from protobuf field <code>string Base64 = 2;</code>
+     * @return string
      */
     public function getBase64()
     {
@@ -91,13 +91,13 @@ class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *播放地址是否base64编码,默认否，0-否，1-是
      *
-     * Generated from protobuf field <code>int64 Base64 = 2;</code>
-     * @param int|string $var
+     * Generated from protobuf field <code>string Base64 = 2;</code>
+     * @param string $var
      * @return $this
      */
     public function setBase64($var)
     {
-        GPBUtil::checkInt64($var);
+        GPBUtil::checkString($var, True);
         $this->Base64 = $var;
 
         return $this;
@@ -106,8 +106,8 @@ class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *返回https播放地址,默认否, 0-否，1-是
      *
-     * Generated from protobuf field <code>int64 Ssl = 3;</code>
-     * @return int|string
+     * Generated from protobuf field <code>string Ssl = 3;</code>
+     * @return string
      */
     public function getSsl()
     {
@@ -117,13 +117,13 @@ class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
     /**
      *返回https播放地址,默认否, 0-否，1-是
      *
-     * Generated from protobuf field <code>int64 Ssl = 3;</code>
-     * @param int|string $var
+     * Generated from protobuf field <code>string Ssl = 3;</code>
+     * @param string $var
      * @return $this
      */
     public function setSsl($var)
     {
-        GPBUtil::checkInt64($var);
+        GPBUtil::checkString($var, True);
         $this->Ssl = $var;
 
         return $this;
