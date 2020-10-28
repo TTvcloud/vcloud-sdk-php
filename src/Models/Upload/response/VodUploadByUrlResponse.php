@@ -1,5 +1,5 @@
 <?php
-require ("BaseResponse.php");
+require("BaseResponse.php");
 
 
 class VodUploadByUrlResponse extends BaseResponse

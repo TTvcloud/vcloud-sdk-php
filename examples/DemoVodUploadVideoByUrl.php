@@ -1,22 +1,22 @@
 <?php
 require('../vendor/autoload.php');
-require("../src/Models/Vod/request/VodUrlUploadRequest.php");
-require ("../src/Models/Vod/response/VodUploadByUrlResponse.php");
+require("../src/Models/Upload/request/VodUrlUploadRequest.php");
+require("../src/Models/Upload/response/VodUploadByUrlResponse.php");
 
 use Vcloud\Service\Vod;
 
 
 $client = Vod::getInstance();
 // call below method if you dont set ak and sk in ～/.vcloud/config
-$client->setAccessKey('AKLTNDQ2YTRlNTBiYTg1NDcyNmE3MDA1MTUzNzc5MWMwNmI');
-$client->setSecretKey('1ZOtyBZ89VERZdOfiUrPf24a3tTjRo1XIJbzccVHMrBvZo1jEn60LjClP2t05qWz');
+$client->setAccessKey('your ak');
+$client->setSecretKey('your sk');
 
 
 $request = new VodUrlUploadRequest();
-$request->setSpaceName('james-test');
+$request->setSpaceName('your space name');
 
 $urlSet = new URLSet();
-$urlSet->setSourceUrl("https://stream7.iqilu.com/10339/upload_transcode/202002/18/20200218114723HDu3hhxqIT.mp4");
+$urlSet->setSourceUrl("url");
 
 $request->addURLSet($urlSet);
 

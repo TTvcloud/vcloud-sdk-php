@@ -5,7 +5,9 @@ namespace Vcloud\Service;
 use Vcloud\Base\V4Curl;
 use GuzzleHttp\Client;
 use Vcloud\Models\Vod\QueryUploadTaskInfoResponse;
+use Vcloud\Models\Vod\UploadVideoResponse;
 use Vcloud\Models\Vod\URLSet;
+use Vcloud\Models\Vod\VodUploadVideoRequest;
 use Vcloud\Models\Vod\VodUrlUploadRequest;
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
@@ -30,15 +32,11 @@ class Vod extends V4Curl
         switch ($region) {
             case 'cn-north-1':
                 $config = [
-//                    'host' => 'https://vod.bytedanceapi.com',
-                    //TODO 测试完毕修改回来
-                    'host' => 'https://staging-openapi-boe.byted.org',
+                    'host' => 'https://vod.bytedanceapi.com',
                     'config' => [
                         'timeout' => 5.0,
                         'headers' => [
                             'Accept' => 'application/json',
-                            //TODO 测试完毕后删掉
-                            'X-TT-ENV' => 'boe_husky_feature',
                         ],
                         'v4_credentials' => [
                             'region' => 'cn-north-1',
@@ -304,14 +302,14 @@ class Vod extends V4Curl
         return (string)$response;
     }
 
-    public function uploadVideoToB(array $applyRequest = [], string $filePath, string $functions)
+    public function uploadVideoToB(VodUploadVideoRequest $request)
     {
-        $resp = $this->uploadToB($applyRequest, $filePath);
+        $applyRequest = ['query' => ['SpaceName' => $request->getSpaceName()]];
+        $resp = $this->uploadToB($applyRequest, $request->getFilePath());
         if ($resp[0] != 0) {
             return $resp[1];
         }
-        $response = $this->commitUploadInfo(['query' => ['SpaceName' => $applyRequest['query']['SpaceName'], 'SessionKey' => $resp[2], 'Functions' => $functions]]);
-        return (string)$response;
+        return $this->commitUploadInfo(['query' => ['SpaceName' => $applyRequest['query']['SpaceName'], 'SessionKey' => $resp[2], 'Functions' => $request->getFunctions(), 'CallbackArgs' => $request->getCallbackArgs()]]);
     }
 
     public function uploadPoster(string $vid, string $spaceName, string $filePath)
@@ -344,11 +342,9 @@ class Vod extends V4Curl
         $respData = new QueryUploadTaskInfoResponse();
         try {
             $respData->mergeFromJsonString($response->getBody(), true);
-        } catch (Exception $e) {
-            throw $e;
+        } catch (\Exception $e) {
         }
         return $respData;
-//        return (string)$response->getBody();
     }
 
     public function modifyVideoInfo(array $query)
@@ -528,14 +524,11 @@ class Vod extends V4Curl
         ],
         'CommitUploadInfo' => [
             'url' => '/',
-            'method' => 'post',
+            'method' => 'get',
             'config' => [
                 'query' => [
                     'Action' => 'CommitUploadInfo',
                     'Version' => '2020-08-01',
-                ],
-                'headers' => [
-                    'Content-Type' => 'application/x-www-form-urlencoded'
                 ],
             ]
         ],

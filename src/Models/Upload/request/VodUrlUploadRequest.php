@@ -1,6 +1,7 @@
 <?php
-require("AbstractURLSet.php");
-require("AbstractVodUrlUploadRequest.php");
+
+use Vcloud\Models\Vod\AbstractURLSet;
+use Vcloud\Models\Vod\AbstractVodUrlUploadRequest;
 
 class VodUrlUploadRequest extends AbstractVodUrlUploadRequest
 {
