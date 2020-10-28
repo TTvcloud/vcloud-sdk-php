@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetOriginalPlayInfoRequest</code>
+ * Generated from protobuf message <code>ttvcloud.models.VodGetOriginalPlayInfoRequest</code>
  */
 class VodGetOriginalPlayInfoRequest extends \Google\Protobuf\Internal\Message
 {

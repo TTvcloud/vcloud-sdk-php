@@ -9,16 +9,16 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VodPlayInfo</code>
+ * Generated from protobuf message <code>ttvcloud.models.VodPlayInfo</code>
  */
 class VodPlayInfo extends \Google\Protobuf\Internal\Message
 {
     /**
      *文件ID
      *
-     * Generated from protobuf field <code>string FileID = 1;</code>
+     * Generated from protobuf field <code>string FileId = 1;</code>
      */
-    protected $FileID = '';
+    protected $FileId = '';
     /**
      * hash值
      *
@@ -142,9 +142,9 @@ class VodPlayInfo extends \Google\Protobuf\Internal\Message
     /**
      *密钥keyID
      *
-     * Generated from protobuf field <code>string PlayAuthID = 22;</code>
+     * Generated from protobuf field <code>string PlayAuthId = 22;</code>
      */
-    protected $PlayAuthID = '';
+    protected $PlayAuthId = '';
     /**
      *水印类型
      *
@@ -164,7 +164,7 @@ class VodPlayInfo extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type string $FileID
+     *     @type string $FileId
      *          文件ID
      *     @type string $Md5
      *           hash值
@@ -206,7 +206,7 @@ class VodPlayInfo extends \Google\Protobuf\Internal\Message
      *           p2p点播时，校验文件地址
      *     @type string $PlayAuth
      *          加密过的秘钥
-     *     @type string $PlayAuthID
+     *     @type string $PlayAuthId
      *          密钥keyID
      *     @type string $LogoType
      *          水印类型
@@ -222,25 +222,25 @@ class VodPlayInfo extends \Google\Protobuf\Internal\Message
     /**
      *文件ID
      *
-     * Generated from protobuf field <code>string FileID = 1;</code>
+     * Generated from protobuf field <code>string FileId = 1;</code>
      * @return string
      */
-    public function getFileID()
+    public function getFileId()
     {
-        return $this->FileID;
+        return $this->FileId;
     }
 
     /**
      *文件ID
      *
-     * Generated from protobuf field <code>string FileID = 1;</code>
+     * Generated from protobuf field <code>string FileId = 1;</code>
      * @param string $var
      * @return $this
      */
-    public function setFileID($var)
+    public function setFileId($var)
     {
         GPBUtil::checkString($var, True);
-        $this->FileID = $var;
+        $this->FileId = $var;
 
         return $this;
     }
@@ -768,25 +768,25 @@ class VodPlayInfo extends \Google\Protobuf\Internal\Message
     /**
      *密钥keyID
      *
-     * Generated from protobuf field <code>string PlayAuthID = 22;</code>
+     * Generated from protobuf field <code>string PlayAuthId = 22;</code>
      * @return string
      */
-    public function getPlayAuthID()
+    public function getPlayAuthId()
     {
-        return $this->PlayAuthID;
+        return $this->PlayAuthId;
     }
 
     /**
      *密钥keyID
      *
-     * Generated from protobuf field <code>string PlayAuthID = 22;</code>
+     * Generated from protobuf field <code>string PlayAuthId = 22;</code>
      * @param string $var
      * @return $this
      */
-    public function setPlayAuthID($var)
+    public function setPlayAuthId($var)
     {
         GPBUtil::checkString($var, True);
-        $this->PlayAuthID = $var;
+        $this->PlayAuthId = $var;
 
         return $this;
     }

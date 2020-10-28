@@ -9,9 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.SourceInfo</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.TranscodeInfo</code>
  */
-class SourceInfo extends \Google\Protobuf\Internal\Message
+class TranscodeInfo extends \Google\Protobuf\Internal\Message
 {
     /**
      *文件ID
@@ -32,69 +32,57 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
      */
     protected $FileType = '';
     /**
-     *编码格式
+     *logo类型
      *
-     * Generated from protobuf field <code>string Codec = 4;</code>
+     * Generated from protobuf field <code>string LogoType = 4;</code>
      */
-    protected $Codec = '';
+    protected $LogoType = '';
     /**
-     *视频高度
+     *是否加密
      *
-     * Generated from protobuf field <code>int64 Height = 5;</code>
+     * Generated from protobuf field <code>bool Encrypt = 5;</code>
      */
-    protected $Height = 0;
-    /**
-     *视频宽度
-     *
-     * Generated from protobuf field <code>int64 Width = 6;</code>
-     */
-    protected $Width = 0;
+    protected $Encrypt = false;
     /**
      *文件格式
      *
-     * Generated from protobuf field <code>string Format = 7;</code>
+     * Generated from protobuf field <code>string Format = 6;</code>
      */
     protected $Format = '';
     /**
      *时长
      *
-     * Generated from protobuf field <code>float Duration = 8;</code>
+     * Generated from protobuf field <code>float Duration = 7;</code>
      */
     protected $Duration = 0.0;
     /**
      *文件大小
      *
-     * Generated from protobuf field <code>int64 Size = 9;</code>
+     * Generated from protobuf field <code>int64 Size = 8;</code>
      */
     protected $Size = 0;
     /**
      *对象地址
      *
-     * Generated from protobuf field <code>string StoreUri = 10;</code>
+     * Generated from protobuf field <code>string StoreUri = 9;</code>
      */
     protected $StoreUri = '';
     /**
-     *视频分辨率
+     *视频流信息
      *
-     * Generated from protobuf field <code>string Definition = 11;</code>
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.VideoStreamMeta VideoStreamMeta = 10;</code>
      */
-    protected $Definition = '';
+    protected $VideoStreamMeta = null;
     /**
-     *码率(Kbps)
+     *音频流信息
      *
-     * Generated from protobuf field <code>int64 Bitrate = 12;</code>
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.AudioStreamMeta AudioStreamMeta = 11;</code>
      */
-    protected $Bitrate = 0;
-    /**
-     *帧率
-     *
-     * Generated from protobuf field <code>float Fps = 13;</code>
-     */
-    protected $Fps = 0.0;
+    protected $AudioStreamMeta = null;
     /**
      *创建时间
      *
-     * Generated from protobuf field <code>string CreateTime = 14;</code>
+     * Generated from protobuf field <code>string CreateTime = 12;</code>
      */
     protected $CreateTime = '';
 
@@ -110,12 +98,10 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
      *          hash值
      *     @type string $FileType
      *          文件类型 video/audio
-     *     @type string $Codec
-     *          编码格式
-     *     @type int|string $Height
-     *          视频高度
-     *     @type int|string $Width
-     *          视频宽度
+     *     @type string $LogoType
+     *          logo类型
+     *     @type bool $Encrypt
+     *          是否加密
      *     @type string $Format
      *          文件格式
      *     @type float $Duration
@@ -124,12 +110,10 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
      *          文件大小
      *     @type string $StoreUri
      *          对象地址
-     *     @type string $Definition
-     *          视频分辨率
-     *     @type int|string $Bitrate
-     *          码率(Kbps)
-     *     @type float $Fps
-     *          帧率
+     *     @type \Vcloud\Models\Vod\VideoStreamMeta $VideoStreamMeta
+     *          视频流信息
+     *     @type \Vcloud\Models\Vod\AudioStreamMeta $AudioStreamMeta
+     *          音频流信息
      *     @type string $CreateTime
      *          创建时间
      * }
@@ -218,79 +202,53 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     *编码格式
+     *logo类型
      *
-     * Generated from protobuf field <code>string Codec = 4;</code>
+     * Generated from protobuf field <code>string LogoType = 4;</code>
      * @return string
      */
-    public function getCodec()
+    public function getLogoType()
     {
-        return $this->Codec;
+        return $this->LogoType;
     }
 
     /**
-     *编码格式
+     *logo类型
      *
-     * Generated from protobuf field <code>string Codec = 4;</code>
+     * Generated from protobuf field <code>string LogoType = 4;</code>
      * @param string $var
      * @return $this
      */
-    public function setCodec($var)
+    public function setLogoType($var)
     {
         GPBUtil::checkString($var, True);
-        $this->Codec = $var;
+        $this->LogoType = $var;
 
         return $this;
     }
 
     /**
-     *视频高度
+     *是否加密
      *
-     * Generated from protobuf field <code>int64 Height = 5;</code>
-     * @return int|string
+     * Generated from protobuf field <code>bool Encrypt = 5;</code>
+     * @return bool
      */
-    public function getHeight()
+    public function getEncrypt()
     {
-        return $this->Height;
+        return $this->Encrypt;
     }
 
     /**
-     *视频高度
+     *是否加密
      *
-     * Generated from protobuf field <code>int64 Height = 5;</code>
-     * @param int|string $var
+     * Generated from protobuf field <code>bool Encrypt = 5;</code>
+     * @param bool $var
      * @return $this
      */
-    public function setHeight($var)
+    public function setEncrypt($var)
     {
-        GPBUtil::checkInt64($var);
-        $this->Height = $var;
-
-        return $this;
-    }
-
-    /**
-     *视频宽度
-     *
-     * Generated from protobuf field <code>int64 Width = 6;</code>
-     * @return int|string
-     */
-    public function getWidth()
-    {
-        return $this->Width;
-    }
-
-    /**
-     *视频宽度
-     *
-     * Generated from protobuf field <code>int64 Width = 6;</code>
-     * @param int|string $var
-     * @return $this
-     */
-    public function setWidth($var)
-    {
-        GPBUtil::checkInt64($var);
-        $this->Width = $var;
+        GPBUtil::checkBool($var);
+        $this->Encrypt = $var;
 
         return $this;
     }
@@ -298,7 +256,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *文件格式
      *
-     * Generated from protobuf field <code>string Format = 7;</code>
+     * Generated from protobuf field <code>string Format = 6;</code>
      * @return string
      */
     public function getFormat()
@@ -309,7 +267,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *文件格式
      *
-     * Generated from protobuf field <code>string Format = 7;</code>
+     * Generated from protobuf field <code>string Format = 6;</code>
      * @param string $var
      * @return $this
      */
@@ -324,7 +282,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *时长
      *
-     * Generated from protobuf field <code>float Duration = 8;</code>
+     * Generated from protobuf field <code>float Duration = 7;</code>
      * @return float
      */
     public function getDuration()
@@ -335,7 +293,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *时长
      *
-     * Generated from protobuf field <code>float Duration = 8;</code>
+     * Generated from protobuf field <code>float Duration = 7;</code>
      * @param float $var
      * @return $this
      */
@@ -350,7 +308,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *文件大小
      *
-     * Generated from protobuf field <code>int64 Size = 9;</code>
+     * Generated from protobuf field <code>int64 Size = 8;</code>
      * @return int|string
      */
     public function getSize()
@@ -361,7 +319,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *文件大小
      *
-     * Generated from protobuf field <code>int64 Size = 9;</code>
+     * Generated from protobuf field <code>int64 Size = 8;</code>
      * @param int|string $var
      * @return $this
      */
@@ -376,7 +334,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *对象地址
      *
-     * Generated from protobuf field <code>string StoreUri = 10;</code>
+     * Generated from protobuf field <code>string StoreUri = 9;</code>
      * @return string
      */
     public function getStoreUri()
@@ -387,7 +345,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *对象地址
      *
-     * Generated from protobuf field <code>string StoreUri = 10;</code>
+     * Generated from protobuf field <code>string StoreUri = 9;</code>
      * @param string $var
      * @return $this
      */
@@ -400,79 +358,53 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     *视频分辨率
+     *视频流信息
      *
-     * Generated from protobuf field <code>string Definition = 11;</code>
-     * @return string
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.VideoStreamMeta VideoStreamMeta = 10;</code>
+     * @return \Vcloud\Models\Vod\VideoStreamMeta
      */
-    public function getDefinition()
+    public function getVideoStreamMeta()
     {
-        return $this->Definition;
+        return $this->VideoStreamMeta;
     }
 
     /**
-     *视频分辨率
+     *视频流信息
      *
-     * Generated from protobuf field <code>string Definition = 11;</code>
-     * @param string $var
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.VideoStreamMeta VideoStreamMeta = 10;</code>
+     * @param \Vcloud\Models\Vod\VideoStreamMeta $var
      * @return $this
      */
-    public function setDefinition($var)
+    public function setVideoStreamMeta($var)
     {
-        GPBUtil::checkString($var, True);
-        $this->Definition = $var;
+        GPBUtil::checkMessage($var, \Vcloud\Models\Vod\VideoStreamMeta::class);
+        $this->VideoStreamMeta = $var;
 
         return $this;
     }
 
     /**
-     *码率(Kbps)
+     *音频流信息
      *
-     * Generated from protobuf field <code>int64 Bitrate = 12;</code>
-     * @return int|string
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.AudioStreamMeta AudioStreamMeta = 11;</code>
+     * @return \Vcloud\Models\Vod\AudioStreamMeta
      */
-    public function getBitrate()
+    public function getAudioStreamMeta()
     {
-        return $this->Bitrate;
+        return $this->AudioStreamMeta;
     }
 
     /**
-     *码率(Kbps)
+     *音频流信息
      *
-     * Generated from protobuf field <code>int64 Bitrate = 12;</code>
-     * @param int|string $var
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.AudioStreamMeta AudioStreamMeta = 11;</code>
+     * @param \Vcloud\Models\Vod\AudioStreamMeta $var
      * @return $this
      */
-    public function setBitrate($var)
+    public function setAudioStreamMeta($var)
     {
-        GPBUtil::checkInt64($var);
-        $this->Bitrate = $var;
-
-        return $this;
-    }
-
-    /**
-     *帧率
-     *
-     * Generated from protobuf field <code>float Fps = 13;</code>
-     * @return float
-     */
-    public function getFps()
-    {
-        return $this->Fps;
-    }
-
-    /**
-     *帧率
-     *
-     * Generated from protobuf field <code>float Fps = 13;</code>
-     * @param float $var
-     * @return $this
-     */
-    public function setFps($var)
-    {
-        GPBUtil::checkFloat($var);
-        $this->Fps = $var;
+        GPBUtil::checkMessage($var, \Vcloud\Models\Vod\AudioStreamMeta::class);
+        $this->AudioStreamMeta = $var;
 
         return $this;
     }
@@ -480,7 +412,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *创建时间
      *
-     * Generated from protobuf field <code>string CreateTime = 14;</code>
+     * Generated from protobuf field <code>string CreateTime = 12;</code>
      * @return string
      */
     public function getCreateTime()
@@ -491,7 +423,7 @@ class SourceInfo extends \Google\Protobuf\Internal\Message
     /**
      *创建时间
      *
-     * Generated from protobuf field <code>string CreateTime = 14;</code>
+     * Generated from protobuf field <code>string CreateTime = 12;</code>
      * @param string $var
      * @return $this
      */
