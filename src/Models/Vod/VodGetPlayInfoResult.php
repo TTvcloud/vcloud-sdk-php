@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetPlayInfoResult</code>
+ * Generated from protobuf message <code>ttvcloud.models.VodGetPlayInfoResult</code>
  */
 class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
 {
@@ -58,13 +58,13 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     /**
      * dash播放信息
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodAdaptiveInfo AdaptiveInfo = 8;</code>
+     * Generated from protobuf field <code>.ttvcloud.models.VodAdaptiveInfo AdaptiveInfo = 8;</code>
      */
     protected $AdaptiveInfo = null;
     /**
      *播放列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodPlayInfo PlayInfoList = 9;</code>
+     * Generated from protobuf field <code>repeated .ttvcloud.models.VodPlayInfo PlayInfoList = 9;</code>
      */
     private $PlayInfoList;
 
@@ -284,7 +284,7 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     /**
      * dash播放信息
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodAdaptiveInfo AdaptiveInfo = 8;</code>
+     * Generated from protobuf field <code>.ttvcloud.models.VodAdaptiveInfo AdaptiveInfo = 8;</code>
      * @return \Vcloud\Models\Vod\VodAdaptiveInfo
      */
     public function getAdaptiveInfo()
@@ -295,7 +295,7 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     /**
      * dash播放信息
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodAdaptiveInfo AdaptiveInfo = 8;</code>
+     * Generated from protobuf field <code>.ttvcloud.models.VodAdaptiveInfo AdaptiveInfo = 8;</code>
      * @param \Vcloud\Models\Vod\VodAdaptiveInfo $var
      * @return $this
      */
@@ -310,7 +310,7 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     /**
      *播放列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodPlayInfo PlayInfoList = 9;</code>
+     * Generated from protobuf field <code>repeated .ttvcloud.models.VodPlayInfo PlayInfoList = 9;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getPlayInfoList()
@@ -321,7 +321,7 @@ class VodGetPlayInfoResult extends \Google\Protobuf\Internal\Message
     /**
      *播放列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodPlayInfo PlayInfoList = 9;</code>
+     * Generated from protobuf field <code>repeated .ttvcloud.models.VodPlayInfo PlayInfoList = 9;</code>
      * @param \Vcloud\Models\Vod\VodPlayInfo[]|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
