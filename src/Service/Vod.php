@@ -3,12 +3,19 @@
 namespace Vcloud\Service;
 
 use Vcloud\Base\V4Curl;
-use GuzzleHttp\Client;
+use \GuzzleHttp\Client;
+use Vcloud\Models\Vod\VodGetOriginalPlayInfoRequest;
+use Vcloud\Models\Vod\VodGetOriginalPlayInfoResponse;
+use Vcloud\Models\Vod\VodGetPlayInfoRequest;
+use Vcloud\Models\Vod\VodGetPlayInfoResponse;
 use Vcloud\Models\Vod\QueryUploadTaskInfoResponse;
 use Vcloud\Models\Vod\UploadVideoResponse;
 use Vcloud\Models\Vod\URLSet;
 use Vcloud\Models\Vod\VodUploadVideoRequest;
 use Vcloud\Models\Vod\VodUrlUploadRequest;
+
+//use Vcloud\Models\Vod\VodGetPlayInfoResponse;
+//use Vcloud\Models\Vod\VodGetPlayInfoRequest;
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
 const ResourceVideoFormat = "trn:vod::*:video_id/%s";
@@ -134,12 +141,12 @@ class Vod extends V4Curl
         if ($vodGetPlayInfoRequest->getLogoType() != null) {
             $query['LogoType'] = $vodGetPlayInfoRequest->getLogoType();
         }
-        if ($vodGetPlayInfoRequest->getBase64() == null || $vodGetPlayInfoRequest->getBase64() != "1") {
-            $query['Base64'] = '0';
+        if ($vodGetPlayInfoRequest->getBase64() == null || $vodGetPlayInfoRequest->getBase64() != 1) {
+            $query['Base64'] = 0;
         } else {
-            $query['Base64'] = '1';
+            $query['Base64'] = 1;
         }
-        if ($vodGetPlayInfoRequest->getSsl() == null || $vodGetPlayInfoRequest->getSsl() != "1") {
+        if ($vodGetPlayInfoRequest->getSsl() == null || $vodGetPlayInfoRequest->getSsl() != 1) {
             $query['Ssl'] = '0';
         } else {
             $query['Ssl'] = '1';
@@ -157,16 +164,35 @@ class Vod extends V4Curl
         return $respData;
     }
 
-    public function getOriginVideoPlayInfo(array $query)
+    public function getOriginVideoPlayInfo(VodGetOriginalPlayInfoRequest $vodGetOriginalPlayInfoRequest): VodGetOriginalPlayInfoResponse
     {
-        $response = $this->request('GetOriginVideoPlayInfo', $query);
-        return (string)$response->getBody();
-    }
-
-    public function getRedirectPlay(array $query)
-    {
-        $response = $this->getRequestUrl('RedirectPlay', $query);
-        return $response;
+        $query = array();
+        if ($vodGetOriginalPlayInfoRequest->getVid() == null || $vodGetOriginalPlayInfoRequest->getVid() == "") {
+            throw new Exception('InvalidParameter');
+        } else {
+            $query['Vid'] = $vodGetOriginalPlayInfoRequest->getVid();
+        }
+        if ($vodGetOriginalPlayInfoRequest->getBase64() == null || $vodGetOriginalPlayInfoRequest->getBase64() != 1) {
+            $query['Base64'] = 0;
+        } else {
+            $query['Base64'] = 1;
+        }
+        if ($vodGetOriginalPlayInfoRequest->getSsl() == null || $vodGetOriginalPlayInfoRequest->getSsl() != 1) {
+            $query['Ssl'] = 0;
+        } else {
+            $query['Ssl'] = 1;
+        }
+        $response = $this->request('GetOriginVideoPlayInfo', ['query' => $query]);
+        if ($response->getStatusCode() != 200) {
+            throw new Exception($response->getReasonPhrase());
+        }
+        $respData = new VodGetOriginalPlayInfoResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $respData;
     }
 
     // 开放参数设置
@@ -353,9 +379,9 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
-    public function startTranscode(array $query)
+    public function startWorkflow(array $query)
     {
-        $response = $this->request('StartTranscode', $query);
+        $response = $this->request('StartWorkflow', $query);
         return (string)$response->getBody();
     }
 
@@ -548,7 +574,7 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'GetPlayInfo',
-                    'Version' => '2019-03-15',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
@@ -582,13 +608,13 @@ class Vod extends V4Curl
                 ],
             ]
         ],
-        'StartTranscode' => [
+        'StartWorkflow' => [
             'url' => '/',
             'method' => 'post',
             'config' => [
                 'query' => [
-                    'Action' => 'StartTranscode',
-                    'Version' => '2018-01-01',
+                    'Action' => 'StartWorkflow',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
@@ -608,7 +634,7 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'RedirectPlay',
-                    'Version' => '2018-01-01',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
@@ -618,7 +644,7 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'GetOriginVideoPlayInfo',
-                    'Version' => '2018-01-01',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
