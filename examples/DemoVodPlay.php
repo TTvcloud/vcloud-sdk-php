@@ -19,6 +19,7 @@ $expire = 60; // 请求的签名有效期
 echo "\nstaging 获取播放地址\n";
 $req = new VodGetPlayInfoRequest();
 $req->setVid($vid);
+$req->setSsl('1');
 $response = new VodGetPlayInfoResponse();
 try {
     $response = $client->getPlayInfo($req);
@@ -32,6 +33,7 @@ echo $response->getResult()->getPlayInfoList()[0]->getMainPlayUrl();
 echo "\n获取源片播放地址\n";
 $req2 = new VodGetOriginalPlayInfoRequest();
 $req2->setVid($vid);
+$req2->setSsl('1');
 $response2 = new VodGetOriginalPlayInfoResponse();
 try {
     $response2 = $client->getOriginVideoPlayInfo($req2);
