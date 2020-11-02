@@ -1,11 +1,11 @@
 <?php
 require('../vendor/autoload.php');
 
-use Vcloud\Models\Vod\VodGetOriginalPlayInfoRequest;
-use Vcloud\Models\Vod\VodGetOriginalPlayInfoResponse;
-use Vcloud\Models\Vod\VodGetPlayInfoRequest;
-use Vcloud\Models\Vod\VodGetPlayInfoResponse;
-use Vcloud\Service\Vod;
+use Vcloud\Models\Vod\Request\VodGetOriginalPlayInfoRequest;
+use Vcloud\Models\Vod\Response\VodGetOriginalPlayInfoResponse;
+use Vcloud\Models\Vod\Request\VodGetPlayInfoRequest;
+use Vcloud\Models\Vod\Response\VodGetPlayInfoResponse;
+use Vcloud\Service\Vod\Vod;
 
 
 $client = Vod::getInstance();
@@ -36,7 +36,7 @@ $req2->setVid($vid);
 $req2->setSsl('1');
 $response2 = new VodGetOriginalPlayInfoResponse();
 try {
-    $response2 = $client->getOriginVideoPlayInfo($req2);
+    $response2 = $client->getOriginalPlayInfo($req2);
 } catch (Exception $e) {
     echo $e;
 }
