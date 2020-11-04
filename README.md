@@ -65,7 +65,9 @@ composer require ttvcloud/vcloud-sdk-php
 [getPosterUrl](https://open.bytedance.com/docs/4/5335/)
 
 #### token相关
-[getUploadAuthToken](https://open.bytedance.com/docs/4/6275/)
+上传 非STS2 token [getUploadAuthToken](https://open.bytedance.com/docs/4/6275/)
+
+上传 STS2 token [参考STS2示例](./examples/DemoVodSts2Upload.php)
 
 [getPlayAuthToken](https://open.bytedance.com/docs/4/6275/)
 
