@@ -15,7 +15,7 @@ $client = Vod::getInstance();
 
 $vid = "v0c2c369007abu04ru8riko30uo9n73g";
 $expire = 60; // 请求的签名有效期
-
+//$vid = "";
 echo "\nstaging 获取播放地址\n";
 $req = new VodGetPlayInfoRequest();
 $req->setVid($vid);
@@ -24,9 +24,11 @@ $response = new VodGetPlayInfoResponse();
 try {
     $response = $client->getPlayInfo($req);
 } catch (Exception $e) {
-    echo $e;
+    echo $e, "\n";
 }
-print_r($response->getResponseMetadata()->getError());
+if ($response->getResponseMetadata()->getError() != null ){
+    print_r($response->getResponseMetadata()->getError());
+}
 echo $response->getResult()->getPlayInfoList()[0]->getMainPlayUrl();
 
 
@@ -38,7 +40,9 @@ $response2 = new VodGetOriginalPlayInfoResponse();
 try {
     $response2 = $client->getOriginalPlayInfo($req2);
 } catch (Exception $e) {
-    echo $e;
+    echo $e, "\n";
 }
-print_r($response2->getResponseMetadata()->getError());
+if ($response2->getResponseMetadata()->getError() != null ){
+    print_r($response2->getResponseMetadata()->getError());
+}
 echo $response2->getResult()->getMainPlayUrl();
