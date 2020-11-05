@@ -9,6 +9,9 @@ use Vcloud\Models\Vod\Request\VodGetPlayInfoRequest;
 use Vcloud\Models\Vod\Response\VodGetPlayInfoResponse;
 use Vcloud\Models\Vod\Request\VodGetOriginalPlayInfoRequest;
 use Vcloud\Models\Vod\Response\VodGetOriginalPlayInfoResponse;
+use Vcloud\Models\Vod\Request\VodStartWorkflowRequest;
+use Vcloud\Models\Vod\Response\VodStartWorkflowResponse;
+
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
 const ResourceVideoFormat = "trn:vod::*:video_id/%s";
@@ -31,8 +34,7 @@ class Vod extends V4Curl
         switch ($region) {
             case 'cn-north-1':
                 $config = [
-                    'host' => 'https://staging-openapi-boe.byted.org',
-//                    'host' => 'https://vod.bytedanceapi.com',
+                    'host' => 'https://vod.bytedanceapi.com',
                     'config' => [
                         'timeout' => 5.0,
                         'headers' => [
@@ -273,10 +275,28 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
-    public function startWorkflow(array $query)
+    /**
+     * StartWorkflow.
+     *
+     * @param req *models.request.VodStartWorkflowRequest
+     * @return *models.response.VodStartWorkflowResponse, int, error
+     * @throws Exception the exception
+     */
+    public function startWorkflow (VodStartWorkflowRequest $req): VodStartWorkflowResponse
     {
-        $response = $this->request('StartWorkflow', $query);
-        return (string)$response->getBody();
+        $jsonData = $req -> serializeToJsonString();
+        $query = json_decode($jsonData, true);
+        $response = $this->request('StartWorkflow', ['query' => $query]);
+        if ($response->getStatusCode() != 200) {
+            throw new Exception($response->getReasonPhrase());
+        }
+        $respData = new VodStartWorkflowResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $respData;
     }
 
     public function setVideoPublishStatus(array $query)

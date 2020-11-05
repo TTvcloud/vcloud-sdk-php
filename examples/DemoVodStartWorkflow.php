@@ -1,24 +1,24 @@
 <?php
 require('../vendor/autoload.php');
-use Vcloud\Service\Vod;
+
+use Vcloud\Models\Vod\Request\VodStartWorkflowRequest;
+use Vcloud\Models\Vod\Response\VodStartWorkflowResponse;
+use Vcloud\Service\Vod\Vod;
 
 $client = Vod::getInstance();
 // call below method if you dont set ak and sk in ～/.vcloud/config
-// $client->setAccessKey($ak);
-// $client->setSecretKey($sk);
+$client->setAccessKey("111");
+$client->setSecretKey("111");
 
 $vid = "";
 $tid = "";
-$callbackArgs = "";
-echo "\n启动工作流\n";
-$input = json_encode(array());
-$response = $client->startWorkflow([
-    'form_params' => [
-            'TemplateId' => $tid,
-            'Vid' => $vid, 
-            'Input' => $input, 
-            'Priority' => 0,
-            'CallbackArgs' => $callbackArgs
-        ]
-    ]); 
-echo $response;
+
+$req = new VodStartWorkflowRequest();
+$req->setVid($vid);
+$req->setTemplateId($tid);
+$response = new VodStartWorkflowResponse();
+try {
+    $response = $client->startWorkflow($req);
+} catch (Exception $e) {
+    echo $e;
+}
