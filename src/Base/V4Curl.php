@@ -122,6 +122,7 @@ abstract class V4Curl extends Singleton
         $method = $info['method'];
         try {
             $response = $this->client->request($method, $info['url'], $info['config']);
+            echo $response->getStatusCode();
             return $response;
         } catch (ClientException $exception) {
             return $exception->getResponse();

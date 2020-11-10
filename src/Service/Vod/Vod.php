@@ -3,6 +3,8 @@
 namespace Vcloud\Service\Vod;
 
 use Exception;
+use Google\Protobuf\Internal\GPBDecodeException;
+use Throwable;
 use Vcloud\Base\V4Curl;
 use \GuzzleHttp\Client;
 use Vcloud\Models\Vod\Request\VodGetPlayInfoRequest;
@@ -108,23 +110,45 @@ class Vod extends V4Curl
     /**
      * GetPlayInfo.
      *
-     * @param req *models.request.VodGetPlayInfoRequest
-     * @return *models.response.VodGetPlayInfoResponse, int, error
+     * @param $req VodGetPlayInfoRequest
+     * @return VodGetPlayInfoResponse
      * @throws Exception the exception
+     * @throws Throwable the exception
      */
-    public function getPlayInfo (VodGetPlayInfoRequest $req): VodGetPlayInfoResponse
+    public function getPlayInfo(VodGetPlayInfoRequest $req): VodGetPlayInfoResponse
     {
-        $jsonData = $req -> serializeToJsonString();
-        $query = json_decode($jsonData, true);
-        $response = $this->request('GetPlayInfo', ['query' => $query]);
+        try {
+            $jsonData = $req->serializeToJsonString();
+            $query = json_decode($jsonData, true);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        try {
+            $response = $this->request('GetPlayInfo', ['query' => $query]);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
         if ($response->getStatusCode() != 200) {
-            throw new Exception($response->getReasonPhrase());
+            echo $response->getStatusCode(), "\n";
+            echo $response->getBody()->getContents(), "\n";
         }
         $respData = new VodGetPlayInfoResponse();
         try {
             $respData->mergeFromJsonString($response->getBody(), true);
         } catch (Exception $e) {
-            throw $e;
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $e, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        } catch (Throwable $t) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $t, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
         }
         return $respData;
     }
@@ -132,27 +156,48 @@ class Vod extends V4Curl
     /**
      * GetOriginalPlayInfo.
      *
-     * @param req *models.request.VodGetOriginalPlayInfoRequest
-     * @return *models.response.VodGetOriginalPlayInfoResponse, int, error
+     * @param $req VodGetOriginalPlayInfoRequest
+     * @return VodGetOriginalPlayInfoResponse
      * @throws Exception the exception
+     * @throws Throwable the exception
      */
-    public function getOriginalPlayInfo (VodGetOriginalPlayInfoRequest $req): VodGetOriginalPlayInfoResponse
+    public function getOriginalPlayInfo(VodGetOriginalPlayInfoRequest $req): VodGetOriginalPlayInfoResponse
     {
-        $jsonData = $req -> serializeToJsonString();
-        $query = json_decode($jsonData, true);
-        $response = $this->request('GetOriginalPlayInfo', ['query' => $query]);
+        try {
+            $jsonData = $req->serializeToJsonString();
+            $query = json_decode($jsonData, true);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        try {
+            $response = $this->request('GetOriginalPlayInfo', ['query' => $query]);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
         if ($response->getStatusCode() != 200) {
-            throw new Exception($response->getReasonPhrase());
+            echo $response->getStatusCode(), "\n";
+            echo $response->getBody()->getContents(), "\n";
         }
         $respData = new VodGetOriginalPlayInfoResponse();
         try {
             $respData->mergeFromJsonString($response->getBody(), true);
         } catch (Exception $e) {
-            throw $e;
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $e, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        } catch (Throwable $t) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $t, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
         }
         return $respData;
     }
-
 
 
     // 开放参数设置
@@ -448,16 +493,6 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'GetPlayInfo',
-                    'Version' => '2020-08-01',
-                ],
-            ]
-        ],
-        'RedirectPlay' => [
-            'url' => '/',
-            'method' => 'get',
-            'config' => [
-                'query' => [
-                    'Action' => 'RedirectPlay',
                     'Version' => '2020-08-01',
                 ],
             ]
