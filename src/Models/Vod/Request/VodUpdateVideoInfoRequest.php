@@ -9,9 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.UpdateVideoInfoRequest</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodUpdateVideoInfoRequest</code>
  */
-class UpdateVideoInfoRequest extends \Google\Protobuf\Internal\Message
+class VodUpdateVideoInfoRequest extends \Google\Protobuf\Internal\Message
 {
     /**
      *视频ID

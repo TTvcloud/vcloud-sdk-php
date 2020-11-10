@@ -9,9 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.MediaBasicInfo</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodMediaBasicInfo</code>
  */
-class MediaBasicInfo extends \Google\Protobuf\Internal\Message
+class VodMediaBasicInfo extends \Google\Protobuf\Internal\Message
 {
     /**
      *空间名

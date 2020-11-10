@@ -20,21 +20,27 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
      */
     protected $Vid = '';
     /**
+     * 工作流模板Id
+     *
+     * Generated from protobuf field <code>string TemplateId = 2;</code>
+     */
+    protected $TemplateId = '';
+    /**
      * 动态参数
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.WorkflowParams Input = 2;</code>
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.WorkflowParams Input = 3;</code>
      */
     protected $Input = null;
     /**
      * 任务优先级
      *
-     * Generated from protobuf field <code>int32 Priority = 3;</code>
+     * Generated from protobuf field <code>int32 Priority = 4;</code>
      */
     protected $Priority = 0;
     /**
      * 回调参数
      *
-     * Generated from protobuf field <code>string CallbackArgs = 4;</code>
+     * Generated from protobuf field <code>string CallbackArgs = 5;</code>
      */
     protected $CallbackArgs = '';
 
@@ -46,6 +52,8 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
      *
      *     @type string $Vid
      *           视频Id
+     *     @type string $TemplateId
+     *           工作流模板Id
      *     @type \Vcloud\Models\Vod\Business\WorkflowParams $Input
      *           动态参数
      *     @type int $Priority
@@ -86,9 +94,35 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * 工作流模板Id
+     *
+     * Generated from protobuf field <code>string TemplateId = 2;</code>
+     * @return string
+     */
+    public function getTemplateId()
+    {
+        return $this->TemplateId;
+    }
+
+    /**
+     * 工作流模板Id
+     *
+     * Generated from protobuf field <code>string TemplateId = 2;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setTemplateId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->TemplateId = $var;
+
+        return $this;
+    }
+
+    /**
      * 动态参数
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.WorkflowParams Input = 2;</code>
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.WorkflowParams Input = 3;</code>
      * @return \Vcloud\Models\Vod\Business\WorkflowParams
      */
     public function getInput()
@@ -99,7 +133,7 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
     /**
      * 动态参数
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.WorkflowParams Input = 2;</code>
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.WorkflowParams Input = 3;</code>
      * @param \Vcloud\Models\Vod\Business\WorkflowParams $var
      * @return $this
      */
@@ -114,7 +148,7 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
     /**
      * 任务优先级
      *
-     * Generated from protobuf field <code>int32 Priority = 3;</code>
+     * Generated from protobuf field <code>int32 Priority = 4;</code>
      * @return int
      */
     public function getPriority()
@@ -125,7 +159,7 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
     /**
      * 任务优先级
      *
-     * Generated from protobuf field <code>int32 Priority = 3;</code>
+     * Generated from protobuf field <code>int32 Priority = 4;</code>
      * @param int $var
      * @return $this
      */
@@ -140,7 +174,7 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
     /**
      * 回调参数
      *
-     * Generated from protobuf field <code>string CallbackArgs = 4;</code>
+     * Generated from protobuf field <code>string CallbackArgs = 5;</code>
      * @return string
      */
     public function getCallbackArgs()
@@ -151,7 +185,7 @@ class VodStartWorkflowRequest extends \Google\Protobuf\Internal\Message
     /**
      * 回调参数
      *
-     * Generated from protobuf field <code>string CallbackArgs = 4;</code>
+     * Generated from protobuf field <code>string CallbackArgs = 5;</code>
      * @param string $var
      * @return $this
      */

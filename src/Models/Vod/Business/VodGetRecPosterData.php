@@ -9,14 +9,14 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.GetRecPostersData</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetRecPosterData</code>
  */
-class GetRecPostersData extends \Google\Protobuf\Internal\Message
+class VodGetRecPosterData extends \Google\Protobuf\Internal\Message
 {
     /**
      *封面图信息
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.StoreUriGroup StoreUriGroups = 1;</code>
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodStoreUriGroup StoreUriGroups = 1;</code>
      */
     private $StoreUriGroups;
     /**
@@ -32,7 +32,7 @@ class GetRecPostersData extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type \Vcloud\Models\Vod\Business\StoreUriGroup[]|\Google\Protobuf\Internal\RepeatedField $StoreUriGroups
+     *     @type \Vcloud\Models\Vod\Business\VodStoreUriGroup[]|\Google\Protobuf\Internal\RepeatedField $StoreUriGroups
      *          封面图信息
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $NotExistVids
      *          不存在的视频VID列表
@@ -46,7 +46,7 @@ class GetRecPostersData extends \Google\Protobuf\Internal\Message
     /**
      *封面图信息
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.StoreUriGroup StoreUriGroups = 1;</code>
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodStoreUriGroup StoreUriGroups = 1;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getStoreUriGroups()
@@ -57,13 +57,13 @@ class GetRecPostersData extends \Google\Protobuf\Internal\Message
     /**
      *封面图信息
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.StoreUriGroup StoreUriGroups = 1;</code>
-     * @param \Vcloud\Models\Vod\Business\StoreUriGroup[]|\Google\Protobuf\Internal\RepeatedField $var
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodStoreUriGroup StoreUriGroups = 1;</code>
+     * @param \Vcloud\Models\Vod\Business\VodStoreUriGroup[]|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setStoreUriGroups($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Vcloud\Models\Vod\Business\StoreUriGroup::class);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Vcloud\Models\Vod\Business\VodStoreUriGroup::class);
         $this->StoreUriGroups = $arr;
 
         return $this;

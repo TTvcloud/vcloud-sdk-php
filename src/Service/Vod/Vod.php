@@ -2,15 +2,24 @@
 
 namespace Vcloud\Service\Vod;
 
+use Cassandra\Value;
 use Exception;
 use Google\Protobuf\Internal\GPBDecodeException;
 use Throwable;
 use Vcloud\Base\V4Curl;
 use \GuzzleHttp\Client;
 use Vcloud\Models\Vod\Request\VodGetPlayInfoRequest;
+use Vcloud\Models\Vod\Request\VodGetRecommendedPosterRequest;
+use Vcloud\Models\Vod\Request\VodGetVideoInfosRequest;
+use Vcloud\Models\Vod\Request\VodUpdateVideoInfoRequest;
+use Vcloud\Models\Vod\Request\VodUpdateVideoPublishStatusRequest;
 use Vcloud\Models\Vod\Response\VodGetPlayInfoResponse;
 use Vcloud\Models\Vod\Request\VodGetOriginalPlayInfoRequest;
 use Vcloud\Models\Vod\Response\VodGetOriginalPlayInfoResponse;
+use Vcloud\Models\Vod\Response\VodGetRecommendedPosterResponse;
+use Vcloud\Models\Vod\Response\VodGetVideoInfosResponse;
+use Vcloud\Models\Vod\Response\VodUpdateVideoInfoResponse;
+use Vcloud\Models\Vod\Response\VodUpdateVideoPublishStatusResponse;
 
 const ResourceSpaceFormat = "trn:vod:%s:*:space/%s";
 const ResourceVideoFormat = "trn:vod::*:video_id/%s";
@@ -302,7 +311,10 @@ class Vod extends V4Curl
         if ($resp[0] != 0) {
             return $resp[1];
         }
-        $response = $this->modifyVideoInfo(['query' => [], 'json' => ['SpaceName' => $spaceName, 'Vid' => $vid, 'Info' => ['PosterUri' => $resp[3]]]]);
+        $req = new VodUpdateVideoInfoRequest();
+        $req->setVid($vid);
+        $req->setPosterUriUnwrapped($resp[3]);
+        $response = $this->updateVideoInfo($req);
         return (string)$response;
     }
 
@@ -312,21 +324,194 @@ class Vod extends V4Curl
         return (string)$response->getBody();
     }
 
-    public function modifyVideoInfo(array $query)
+    /**
+     * UpdateVideoInfo.
+     *
+     * @param $req VodUpdateVideoInfoRequest
+     * @return VodUpdateVideoInfoResponse
+     * @throws Exception the exception
+     * @throws Throwable the exception
+     */
+    public function updateVideoInfo (VodUpdateVideoInfoRequest $req): VodUpdateVideoInfoResponse
     {
-        $response = $this->request('ModifyVideoInfo', $query);
-        return (string)$response->getBody();
+        try {
+            $jsonData = $req -> serializeToJsonString();
+            $query = json_decode($jsonData, true);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        try {
+            $response = $this->request('UpdateVideoInfo', ['query' => $query]);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        if ($response->getStatusCode() != 200) {
+            echo $response->getStatusCode(), "\n";
+            echo $response->getBody()->getContents(), "\n";
+        }
+        $respData = new VodUpdateVideoInfoResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $e, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        } catch (Throwable $t) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $t, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        }
+        return $respData;
+    }
+
+    /**
+     * UpdateVideoPublishStatus.
+     *
+     * @param $req VodUpdateVideoPublishStatusRequest
+     * @return VodUpdateVideoPublishStatusResponse
+     * @throws Exception the exception
+     * @throws Throwable the exception
+     */
+    public function updateVideoPublishStatus (VodUpdateVideoPublishStatusRequest $req): VodUpdateVideoPublishStatusResponse
+    {
+        try {
+            $jsonData = $req -> serializeToJsonString();
+            $query = json_decode($jsonData, true);
+            print_r($query);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        try {
+            $response = $this->request('UpdateVideoPublishStatus', ['query' => $query]);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        if ($response->getStatusCode() != 200) {
+            echo $response->getStatusCode(), "\n";
+            echo $response->getBody()->getContents(), "\n";
+        }
+        $respData = new VodUpdateVideoPublishStatusResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $e, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        } catch (Throwable $t) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $t, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        }
+        return $respData;
+    }
+
+    /**
+     * GetVideoInfos.
+     *
+     * @param $req VodGetVideoInfosRequest
+     * @return VodGetVideoInfosResponse
+     * @throws Exception the exception
+     * @throws Throwable the exception
+     */
+    public function getVideoInfos (VodGetVideoInfosRequest $req): VodGetVideoInfosResponse
+    {
+        try {
+            $jsonData = $req -> serializeToJsonString();
+            $query = json_decode($jsonData, true);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        try {
+            $response = $this->request('GetVideoInfos', ['query' => $query]);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        if ($response->getStatusCode() != 200) {
+            echo $response->getStatusCode(), "\n";
+            echo $response->getBody()->getContents(), "\n";
+        }
+        $respData = new VodGetVideoInfosResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $e, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        } catch (Throwable $t) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $t, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        }
+        return $respData;
+    }
+
+    /**
+     * GetRecommendedPoster.
+     *
+     * @param $req VodGetRecommendedPosterRequest
+     * @return VodGetRecommendedPosterResponse
+     * @throws Exception the exception
+     * @throws Throwable the exception
+     */
+    public function getRecommendedPoster (VodGetRecommendedPosterRequest $req): VodGetRecommendedPosterResponse
+    {
+        try {
+            $jsonData = $req -> serializeToJsonString();
+            $query = json_decode($jsonData, true);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        try {
+            $response = $this->request('GetRecommendedPoster', ['query' => $query]);
+        } catch (Exception $e) {
+            throw $e;
+        } catch (Throwable $t) {
+            throw $t;
+        }
+        if ($response->getStatusCode() != 200) {
+            echo $response->getStatusCode(), "\n";
+            echo $response->getBody()->getContents(), "\n";
+        }
+        $respData = new VodGetRecommendedPosterResponse();
+        try {
+            $respData->mergeFromJsonString($response->getBody(), true);
+        } catch (Exception $e) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $e, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        } catch (Throwable $t) {
+            if ($respData == null || $respData->getResponseMetadata() == null) {
+                echo $t, "\n";
+                throw new Exception($response->getReasonPhrase());
+            }
+        }
+        return $respData;
     }
 
     public function startWorkflow(array $query)
     {
         $response = $this->request('StartWorkflow', $query);
-        return (string)$response->getBody();
-    }
-
-    public function setVideoPublishStatus(array $query)
-    {
-        $response = $this->request('SetVideoPublishStatus', $query);
         return (string)$response->getBody();
     }
 
@@ -527,16 +712,6 @@ class Vod extends V4Curl
                 ],
             ]
         ],
-        'SetVideoPublishStatus' => [
-            'url' => '/',
-            'method' => 'post',
-            'config' => [
-                'query' => [
-                    'Action' => 'SetVideoPublishStatus',
-                    'Version' => '2018-01-01',
-                ],
-            ]
-        ],
         'GetCdnDomainWeights' => [
             'url' => '/',
             'method' => 'get',
@@ -547,13 +722,43 @@ class Vod extends V4Curl
                 ],
             ]
         ],
-        'ModifyVideoInfo' => [
+        'UpdateVideoInfo' => [
             'url' => '/',
-            'method' => 'post',
+            'method' => 'get',
             'config' => [
                 'query' => [
-                    'Action' => 'ModifyVideoInfo',
-                    'Version' => '2018-01-01',
+                    'Action' => 'UpdateVideoInfo',
+                    'Version' => '2020-08-01',
+                ],
+            ]
+        ],
+        'UpdateVideoPublishStatus' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'UpdateVideoPublishStatus',
+                    'Version' => '2020-08-01',
+                ],
+            ]
+        ],
+        'GetVideoInfos' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetVideoInfos',
+                    'Version' => '2020-08-01',
+                ],
+            ]
+        ],
+        'GetRecommendedPoster' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'GetRecommendedPoster',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
