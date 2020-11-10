@@ -9,14 +9,14 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.VideoInfo</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodVideoInfo</code>
  */
-class VideoInfo extends \Google\Protobuf\Internal\Message
+class VodVideoInfo extends \Google\Protobuf\Internal\Message
 {
     /**
      *视频基础信息
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.MediaBasicInfo BasicInfo = 1;</code>
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodMediaBasicInfo BasicInfo = 1;</code>
      */
     protected $BasicInfo = null;
     /**
@@ -28,7 +28,7 @@ class VideoInfo extends \Google\Protobuf\Internal\Message
     /**
      *转码视频信息列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.TranscodeInfo TranscodeInfos = 3;</code>
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodTranscodeInfo TranscodeInfos = 3;</code>
      */
     private $TranscodeInfos;
 
@@ -38,11 +38,11 @@ class VideoInfo extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type \Vcloud\Models\Vod\Business\MediaBasicInfo $BasicInfo
+     *     @type \Vcloud\Models\Vod\Business\VodMediaBasicInfo $BasicInfo
      *          视频基础信息
      *     @type \Vcloud\Models\Vod\Business\VodSourceInfo $SourceInfo
      *          原视频信息
-     *     @type \Vcloud\Models\Vod\Business\TranscodeInfo[]|\Google\Protobuf\Internal\RepeatedField $TranscodeInfos
+     *     @type \Vcloud\Models\Vod\Business\VodTranscodeInfo[]|\Google\Protobuf\Internal\RepeatedField $TranscodeInfos
      *          转码视频信息列表
      * }
      */
@@ -54,8 +54,8 @@ class VideoInfo extends \Google\Protobuf\Internal\Message
     /**
      *视频基础信息
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.MediaBasicInfo BasicInfo = 1;</code>
-     * @return \Vcloud\Models\Vod\Business\MediaBasicInfo
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodMediaBasicInfo BasicInfo = 1;</code>
+     * @return \Vcloud\Models\Vod\Business\VodMediaBasicInfo
      */
     public function getBasicInfo()
     {
@@ -65,13 +65,13 @@ class VideoInfo extends \Google\Protobuf\Internal\Message
     /**
      *视频基础信息
      *
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.MediaBasicInfo BasicInfo = 1;</code>
-     * @param \Vcloud\Models\Vod\Business\MediaBasicInfo $var
+     * Generated from protobuf field <code>.Vcloud.Models.Vod.VodMediaBasicInfo BasicInfo = 1;</code>
+     * @param \Vcloud\Models\Vod\Business\VodMediaBasicInfo $var
      * @return $this
      */
     public function setBasicInfo($var)
     {
-        GPBUtil::checkMessage($var, \Vcloud\Models\Vod\Business\MediaBasicInfo::class);
+        GPBUtil::checkMessage($var, \Vcloud\Models\Vod\Business\VodMediaBasicInfo::class);
         $this->BasicInfo = $var;
 
         return $this;
@@ -106,7 +106,7 @@ class VideoInfo extends \Google\Protobuf\Internal\Message
     /**
      *转码视频信息列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.TranscodeInfo TranscodeInfos = 3;</code>
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodTranscodeInfo TranscodeInfos = 3;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getTranscodeInfos()
@@ -117,13 +117,13 @@ class VideoInfo extends \Google\Protobuf\Internal\Message
     /**
      *转码视频信息列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.TranscodeInfo TranscodeInfos = 3;</code>
-     * @param \Vcloud\Models\Vod\Business\TranscodeInfo[]|\Google\Protobuf\Internal\RepeatedField $var
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodTranscodeInfo TranscodeInfos = 3;</code>
+     * @param \Vcloud\Models\Vod\Business\VodTranscodeInfo[]|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setTranscodeInfos($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Vcloud\Models\Vod\Business\TranscodeInfo::class);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Vcloud\Models\Vod\Business\VodTranscodeInfo::class);
         $this->TranscodeInfos = $arr;
 
         return $this;

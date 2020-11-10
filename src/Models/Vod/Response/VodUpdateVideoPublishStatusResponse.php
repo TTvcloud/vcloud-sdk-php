@@ -9,18 +9,14 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.GetRecPostersResponse</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodUpdateVideoPublishStatusResponse</code>
  */
-class GetRecPostersResponse extends \Google\Protobuf\Internal\Message
+class VodUpdateVideoPublishStatusResponse extends \Google\Protobuf\Internal\Message
 {
     /**
      * Generated from protobuf field <code>.Vcloud.Models.Base.ResponseMetadata ResponseMetadata = 1;</code>
      */
     protected $ResponseMetadata = null;
-    /**
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.GetRecPostersData Result = 2;</code>
-     */
-    protected $Result = null;
 
     /**
      * Constructor.
@@ -29,7 +25,6 @@ class GetRecPostersResponse extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type \Vcloud\Models\Base\ResponseMetadata $ResponseMetadata
-     *     @type \Vcloud\Models\Vod\Business\GetRecPostersData $Result
      * }
      */
     public function __construct($data = NULL) {
@@ -55,28 +50,6 @@ class GetRecPostersResponse extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Vcloud\Models\Base\ResponseMetadata::class);
         $this->ResponseMetadata = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.GetRecPostersData Result = 2;</code>
-     * @return \Vcloud\Models\Vod\Business\GetRecPostersData
-     */
-    public function getResult()
-    {
-        return $this->Result;
-    }
-
-    /**
-     * Generated from protobuf field <code>.Vcloud.Models.Vod.GetRecPostersData Result = 2;</code>
-     * @param \Vcloud\Models\Vod\Business\GetRecPostersData $var
-     * @return $this
-     */
-    public function setResult($var)
-    {
-        GPBUtil::checkMessage($var, \Vcloud\Models\Vod\Business\GetRecPostersData::class);
-        $this->Result = $var;
 
         return $this;
     }

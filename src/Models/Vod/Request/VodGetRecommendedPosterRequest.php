@@ -9,9 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.GetRecommendedPostersRequest</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetRecommendedPosterRequest</code>
  */
-class GetRecommendedPostersRequest extends \Google\Protobuf\Internal\Message
+class VodGetRecommendedPosterRequest extends \Google\Protobuf\Internal\Message
 {
     /**
      *视频ID列表

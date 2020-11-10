@@ -9,14 +9,14 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>Vcloud.Models.Vod.GetVideoInfosData</code>
+ * Generated from protobuf message <code>Vcloud.Models.Vod.VodGetVideoInfosData</code>
  */
-class GetVideoInfosData extends \Google\Protobuf\Internal\Message
+class VodGetVideoInfosData extends \Google\Protobuf\Internal\Message
 {
     /**
      *视频信息列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VideoInfo VideoInfoList = 1;</code>
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodVideoInfo VideoInfoList = 1;</code>
      */
     private $VideoInfoList;
     /**
@@ -32,7 +32,7 @@ class GetVideoInfosData extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type \Vcloud\Models\Vod\Business\VideoInfo[]|\Google\Protobuf\Internal\RepeatedField $VideoInfoList
+     *     @type \Vcloud\Models\Vod\Business\VodVideoInfo[]|\Google\Protobuf\Internal\RepeatedField $VideoInfoList
      *          视频信息列表
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $NotExistVids
      *          不存在的视频VID列表
@@ -46,7 +46,7 @@ class GetVideoInfosData extends \Google\Protobuf\Internal\Message
     /**
      *视频信息列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VideoInfo VideoInfoList = 1;</code>
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodVideoInfo VideoInfoList = 1;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getVideoInfoList()
@@ -57,13 +57,13 @@ class GetVideoInfosData extends \Google\Protobuf\Internal\Message
     /**
      *视频信息列表
      *
-     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VideoInfo VideoInfoList = 1;</code>
-     * @param \Vcloud\Models\Vod\Business\VideoInfo[]|\Google\Protobuf\Internal\RepeatedField $var
+     * Generated from protobuf field <code>repeated .Vcloud.Models.Vod.VodVideoInfo VideoInfoList = 1;</code>
+     * @param \Vcloud\Models\Vod\Business\VodVideoInfo[]|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setVideoInfoList($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Vcloud\Models\Vod\Business\VideoInfo::class);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Vcloud\Models\Vod\Business\VodVideoInfo::class);
         $this->VideoInfoList = $arr;
 
         return $this;

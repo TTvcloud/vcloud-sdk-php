@@ -1,7 +1,7 @@
 <?php
 require('../vendor/autoload.php');
 
-use Vcloud\Models\Vod\Request\VodUpdateVideoPublishStatusRequest;
+use Vcloud\Models\Vod\Request\VodUpdateVideoInfoRequest;
 use Vcloud\Service\Vod\Vod;
 
 $client = Vod::getInstance();
@@ -10,16 +10,21 @@ $client = Vod::getInstance();
 // $client->setSecretKey("");
 
 $vid = "vid";
-$status = "Published";
+$title = "title";
+$tags = "tag1,tag2";
 
 echo "\n修改发布状态\n";
 
-$req = new VodUpdateVideoPublishStatusRequest();
+$req = new VodUpdateVideoInfoRequest();
 $req->setVid($vid);
-$req->setStatus($status);
+$req->setTitleUnwrapped($title);
+$req->setTagsUnwrapped($tags);
 try {
-    $response = $client->updateVideoPublishStatus($req);
+    $response = $client->updateVideoInfo($req);
 } catch (Throwable $e) {
     print($e);
 }
+
 echo $response->serializeToJsonString();
+
+
