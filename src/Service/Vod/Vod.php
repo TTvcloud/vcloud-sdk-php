@@ -209,102 +209,6 @@ class Vod extends V4Curl
     }
 
 
-    // 开放参数设置
-    public function getUploadAuthToken(array $config = [], string $version = "v1")
-    {
-        $token = ["Version" => $version];
-        switch ($version) {
-            case "v1":
-                $this->getUploadAuthTokenV1($config, $token);
-            default:
-                $token["Version"] = "v1";
-                $this->getUploadAuthTokenV1($config, $token);
-        }
-        return base64_encode(json_encode($token));
-    }
-
-    private function getUploadAuthTokenV1(array $config, array &$token)
-    {
-        $url = $this->getRequestUrl("ApplyUpload", $config);
-        $m = parse_url($url);
-
-        $token["ApplyUploadToken"] = $m["query"];
-
-        $url = $this->getRequestUrl("CommitUpload", $config);
-        $m = parse_url($url);
-
-        $token["CommitUploadToken"] = $m["query"];
-    }
-
-    public function applyUpload(array $query)
-    {
-        $response = $this->request('ApplyUpload', $query);
-        return (string)$response->getBody();
-    }
-
-    public function commitUpload(array $query)
-    {
-        $response = $this->request('CommitUpload', $query);
-        return (string)$response->getBody();
-    }
-
-    public function uploadFile(string $uploadHost, $storeInfo, string $filePath)
-    {
-        if (!file_exists($filePath)) {
-            return -1;
-        }
-        $content = file_get_contents($filePath);
-        $crc32 = dechex(crc32($content));
-
-        $body = fopen($filePath, "r");
-        $tosClient = new Client([
-            'base_uri' => "http://" . $uploadHost,
-            'timeout' => 5.0,
-        ]);
-
-        $response = $tosClient->request('PUT', $storeInfo["StoreUri"], ["body" => $body, "headers" => ['Authorization' => $storeInfo["Auth"], 'Content-CRC32' => $crc32]]);
-        $uploadResponse = json_decode((string)$response->getBody(), true);
-        if (!isset($uploadResponse["success"]) || $uploadResponse["success"] != 0) {
-            return -2;
-        }
-        return 0;
-    }
-
-    public function upload(string $spaceName, string $filePath, string $fileType)
-    {
-        if (!file_exists($filePath)) {
-            return array(-1, "file not exists", "", "");
-        }
-        $content = file_get_contents($filePath);
-        $crc32 = dechex(crc32($content));
-
-        $response = $this->applyUpload(['query' => ['SpaceName' => $spaceName]]);
-        $applyResponse = json_decode($response, true);
-        if (isset($applyResponse["ResponseMetadata"]["Error"])) {
-            return array(-1, $applyResponse["ResponseMetadata"]["Error"]["Message"], "", "");
-        }
-        $uploadHost = $applyResponse['Result']['UploadAddress']['UploadHosts'][0];
-        $oid = $applyResponse['Result']['UploadAddress']['StoreInfos'][0]['StoreUri'];
-        $session = $applyResponse['Result']['UploadAddress']['SessionKey'];
-
-        $respCode = $this->uploadFile($uploadHost, $applyResponse['Result']['UploadAddress']['StoreInfos'][0], $filePath);
-        if ($respCode != 0) {
-            return array(-1, "upload " . $filePath . " error", "", "");
-        }
-
-        return array(0, "", $session, $oid);
-    }
-
-    public function uploadVideo(string $spaceName, string $filePath, array $functions = [])
-    {
-        $resp = $this->upload($spaceName, $filePath, "video");
-        if ($resp[0] != 0) {
-            return $resp[1];
-        }
-        $response = $this->commitUpload(['query' => ['SpaceName' => $spaceName], 'json' => ['SessionKey' => $resp[2], 'Functions' => $functions]]);
-        return (string)$response;
-    }
-
     public function uploadPoster(string $vid, string $spaceName, string $filePath)
     {
         $resp = $this->upload($spaceName, $filePath, "image");
@@ -318,12 +222,6 @@ class Vod extends V4Curl
         return (string)$response;
     }
 
-    public function uploadMediaByUrl(array $query)
-    {
-        $response = $this->request('UploadMediaByUrl', $query);
-        return (string)$response->getBody();
-    }
-
     /**
      * UpdateVideoInfo.
      *
@@ -332,10 +230,10 @@ class Vod extends V4Curl
      * @throws Exception the exception
      * @throws Throwable the exception
      */
-    public function updateVideoInfo (VodUpdateVideoInfoRequest $req): VodUpdateVideoInfoResponse
+    public function updateVideoInfo(VodUpdateVideoInfoRequest $req): VodUpdateVideoInfoResponse
     {
         try {
-            $jsonData = $req -> serializeToJsonString();
+            $jsonData = $req->serializeToJsonString();
             $query = json_decode($jsonData, true);
         } catch (Exception $e) {
             throw $e;
@@ -378,10 +276,10 @@ class Vod extends V4Curl
      * @throws Exception the exception
      * @throws Throwable the exception
      */
-    public function updateVideoPublishStatus (VodUpdateVideoPublishStatusRequest $req): VodUpdateVideoPublishStatusResponse
+    public function updateVideoPublishStatus(VodUpdateVideoPublishStatusRequest $req): VodUpdateVideoPublishStatusResponse
     {
         try {
-            $jsonData = $req -> serializeToJsonString();
+            $jsonData = $req->serializeToJsonString();
             $query = json_decode($jsonData, true);
             print_r($query);
         } catch (Exception $e) {
@@ -425,10 +323,10 @@ class Vod extends V4Curl
      * @throws Exception the exception
      * @throws Throwable the exception
      */
-    public function getVideoInfos (VodGetVideoInfosRequest $req): VodGetVideoInfosResponse
+    public function getVideoInfos(VodGetVideoInfosRequest $req): VodGetVideoInfosResponse
     {
         try {
-            $jsonData = $req -> serializeToJsonString();
+            $jsonData = $req->serializeToJsonString();
             $query = json_decode($jsonData, true);
         } catch (Exception $e) {
             throw $e;
@@ -471,10 +369,10 @@ class Vod extends V4Curl
      * @throws Exception the exception
      * @throws Throwable the exception
      */
-    public function getRecommendedPoster (VodGetRecommendedPosterRequest $req): VodGetRecommendedPosterResponse
+    public function getRecommendedPoster(VodGetRecommendedPosterRequest $req): VodGetRecommendedPosterResponse
     {
         try {
-            $jsonData = $req -> serializeToJsonString();
+            $jsonData = $req->serializeToJsonString();
             $query = json_decode($jsonData, true);
         } catch (Exception $e) {
             throw $e;
@@ -652,23 +550,23 @@ class Vod extends V4Curl
                 ],
             ]
         ],
-        'ApplyUpload' => [
+        'ApplyUploadInfo' => [
             'url' => '/',
             'method' => 'get',
             'config' => [
                 'query' => [
-                    'Action' => 'ApplyUpload',
-                    'Version' => '2018-01-01',
+                    'Action' => 'ApplyUploadInfo',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
-        'CommitUpload' => [
+        'CommitUploadInfo' => [
             'url' => '/',
-            'method' => 'post',
+            'method' => 'get',
             'config' => [
                 'query' => [
-                    'Action' => 'CommitUpload',
-                    'Version' => '2018-01-01',
+                    'Action' => 'CommitUploadInfo',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
@@ -698,7 +596,17 @@ class Vod extends V4Curl
             'config' => [
                 'query' => [
                     'Action' => 'UploadMediaByUrl',
-                    'Version' => '2018-01-01',
+                    'Version' => '2020-08-01',
+                ],
+            ]
+        ],
+        'QueryUploadTaskInfo' => [
+            'url' => '/',
+            'method' => 'get',
+            'config' => [
+                'query' => [
+                    'Action' => 'QueryUploadTaskInfo',
+                    'Version' => '2020-08-01',
                 ],
             ]
         ],
