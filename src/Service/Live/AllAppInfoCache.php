@@ -32,7 +32,6 @@ class AllAppInfoCache{
             $cache[$this->_genPush2AllPlayInfosKey($pushID)] = $playInfos;
         }
         self::$cache = $cache;
-        echo logPrefix.'update all app info cache finished'.PHP_EOL;
         return true;
     }
 

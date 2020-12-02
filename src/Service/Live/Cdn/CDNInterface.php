@@ -27,7 +27,6 @@ function registerCdnInstance(array &$mapCdn, $cdnName, $ci){
     }
 
     $mapCdn[$cdnName] = $ci;
-    echo "[vcloud-live]register cdn:$cdnName".PHP_EOL;
 }
 
 function initHandler(){
