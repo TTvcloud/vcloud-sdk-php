@@ -32,21 +32,6 @@ class ImageX extends V4Curl
                     ],
                 ];
                 break;
-            case 'cn-north-1-inner':
-                $config = [
-                    'host' => 'http://imagex.byted.org',
-                    'config' => [
-                        'timeout' => 5.0,
-                        'headers' => [
-                            'Accept' => 'application/json'
-                        ],
-                        'v4_credentials' => [
-                            'region' => 'cn-north-1',
-                            'service' => 'ImageX',
-                        ],
-                    ],
-                ];
-                break;
             case 'ap-singapore-1':
                 $config = [
                     'host' => 'https://imagex.ap-singapore-1.bytedanceapi.com',
@@ -62,39 +47,9 @@ class ImageX extends V4Curl
                     ],
                 ];
                 break;
-            case 'ap-singapore-1-inner':
-                $config = [
-                    'host' => 'http://imagex.ap-singapore-1.byted.org',
-                    'config' => [
-                        'timeout' => 5.0,
-                        'headers' => [
-                            'Accept' => 'application/json'
-                        ],
-                        'v4_credentials' => [
-                            'region' => 'ap-singapore-1',
-                            'service' => 'ImageX',
-                        ],
-                    ],
-                ];
-                break;
             case 'us-east-1':
                 $config = [
                     'host' => 'https://imagex.us-east-1.bytedanceapi.com',
-                    'config' => [
-                        'timeout' => 5.0,
-                        'headers' => [
-                            'Accept' => 'application/json'
-                        ],
-                        'v4_credentials' => [
-                            'region' => 'us-east-1',
-                            'service' => 'ImageX',
-                        ],
-                    ],
-                ];
-                break;
-            case 'us-east-1-inner':
-                $config = [
-                    'host' => 'http://imagex.us-east-1.byted.com',
                     'config' => [
                         'timeout' => 5.0,
                         'headers' => [
