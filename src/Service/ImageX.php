@@ -62,6 +62,21 @@ class ImageX extends V4Curl
                     ],
                 ];
                 break;
+            case 'us-east-2':
+                $config = [
+                    'host' => 'https://imagex-us-east-2.bytevcloudapi.com',
+                    'config' => [
+                        'timeout' => 5.0,
+                        'headers' => [
+                            'Accept' => 'application/json'
+                        ],
+                        'v4_credentials' => [
+                            'region' => 'us-east-2',
+                            'service' => 'ImageX',
+                        ],
+                    ],
+                ];
+                break;
             default:
                 throw new \Exception("Cant find the region, please check it carefully");
         }
